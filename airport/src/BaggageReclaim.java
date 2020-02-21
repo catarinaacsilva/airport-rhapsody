@@ -1,8 +1,17 @@
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class BaggageReclaim {
 
     private boolean reclaimBag;
 
+    private final Lock lock = new ReentrantLock();
+    private final Condition notFull  = lock.newCondition();
+    private final Condition notEmpty = lock.newCondition();
+
     public BaggageReclaim(boolean reclaimBag){
+
         this.reclaimBag = reclaimBag;
     }
 
@@ -13,6 +22,19 @@ public class BaggageReclaim {
         }
         return false;
     }
+
+    public void reportMissingBags(){
+        lock.lock();
+        try {
+            if(reclaimBag == true) {
+                //action to that
+
+            }
+        }finally {
+            lock.unlock();
+        }
+    }
+
 
     public void goHome(){
 

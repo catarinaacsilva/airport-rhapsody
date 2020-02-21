@@ -1,3 +1,5 @@
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Passenger implements Runnable{
     protected final int AT_THE_DISEMBARKING_ZONE = 0;
     protected final int AT_THE_LUGGAGE_COLLECTION_POINT = 1;
@@ -12,8 +14,6 @@ public class Passenger implements Runnable{
     private boolean takeBus;
 
     private int state;
-
-
 
     public Passenger (boolean bag, boolean takeBus){
         this.bag = bag;
