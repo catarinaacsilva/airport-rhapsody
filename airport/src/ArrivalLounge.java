@@ -13,7 +13,7 @@ public class ArrivalLounge {
     private int numPersonBag;
 
     /**
-     * Numero e pessoas que vao apanhar autocarro
+     * Numero de pessoas que vao apanhar autocarro
      */
     private int numPersonBus;
 
@@ -31,9 +31,14 @@ public class ArrivalLounge {
     }
 
     /**
-     * Pessoas a espera de um autocarro
+     * Pessoas à espera de um autocarro
      */
+    //TODO: confirmar
     public int takeABus(){
+        lock.lock();
+        try{
+
+        }
         return numPersonBus;
     }
 }

@@ -13,30 +13,30 @@ public class TerminalTransferQuays {
      */
     private int numPeople;
 
+
     private final Lock lock = new ReentrantLock();
     private final Condition goOnBus  = lock.newCondition();
 
     public TerminalTransferQuays(int numPeople){
+
         this.numPeople = numPeople;
     }
-
     /**
-     * Se nao hoouver mais lugares tem que esperar pelo proximo autocarro
+     * Se nao houver mais lugares tem que esperar pelo proximo autocarro
      * @return
      */
+
     public void enterTheBus() throws InterruptedException {
         lock.lock();
         try{
-            //Se houver pessoas para entrar incrementa -> takeABus vem do ArrivalLounge
-            if (takeABus() > 0){
+            if (takeABus() > 0){ //TODO: confirmar
                 numPeople ++;
                 while (numSeatsBus == numPeople)
-                    goOnBus.await();
+                    goOnBus.await(); // Nota: é obrigatorio estar sempre dentro de um ciclo
             }
         }finally {
             lock.unlock();
         }
     }
-
     
 }
