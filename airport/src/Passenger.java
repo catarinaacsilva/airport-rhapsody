@@ -3,17 +3,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Passenger implements Runnable{
 
     public int numBags;
+    public int state;
+    public int id;
 
-    private boolean bag;
-    private boolean takeBus;
-
-    private int state;
-
-    public Passenger (boolean bag, boolean takeBus){
-        this.bag = bag;
-        this.takeBus = takeBus;
+    public Passenger (int numBags){
+        this.numBags = numBags;
         state = 0; // Estado inicial
-
+        id = 0; //TODO: tem que ser um número sequecial (contador genérico)
     }
 
 
@@ -32,6 +28,8 @@ public class Passenger implements Runnable{
             System.out.println(this);
         }
     }
+
+    //TODO: usar o tipo de dados enumerado para ver o estado presente e seguinte
 
     /**
      * Next state based on state machie

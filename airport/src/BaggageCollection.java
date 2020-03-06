@@ -11,21 +11,29 @@ public class BaggageCollection {
     /**
      * Cada utilizador tem uma ou mais malas associadas
      */
-    Map<Passenger, ArrayList<Bag>> BagsToPassenger = new HashMap<>();
+    Map<Passenger, ArrayList<Bag>> BagsToPassenger;
 
     /**
      * Quando as mala são enviadas para o tapete para serem recolhias
      */
-    Stack<Bag> stackBags = new Stack();
+    Stack<Bag> stackBags;
 
     /**
      * Quando as mala são enviadas para o storeroom
      */
-    Stack<Bag> stackStore = new Stack<>();
+    Stack<Bag> stackStore;
+
+    public boolean total;
 
     private final Lock lock = new ReentrantLock();
     //private final Condition missing  = lock.newCondition();
 
+    public BaggageCollection(){
+        BagsToPassenger = new HashMap<>();
+        stackBags = new Stack();
+        stackStore = new Stack<>();
+        total = false;
+    }
 
     /**
      * Passageiro vai buscar a mala
@@ -40,11 +48,18 @@ public class BaggageCollection {
                 for(int j=0; j<b.size(); j++){
                     if(b.get(j).id == auxBag.id)
                         p[i].numBags--;
-                        if(p[i].numBags == 0)
+                        if(p[i].numBags == 0) {
                             p[i] = null;
+                            total = true;
+                        }
                 }
             }
         }
+    }
+
+
+    public boolean haveTotalBags(){
+        return total;
     }
 
     /**

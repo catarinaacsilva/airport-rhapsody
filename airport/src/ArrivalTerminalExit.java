@@ -1,26 +1,14 @@
 public class ArrivalTerminalExit {
-
-
+    
 
     public ArrivalTerminalExit(){
 
     }
 
-    /**
-     * saber se a pessoa ja deixou o terminal
-     */
-    public boolean exitArrivalTerminal(){
-
-        return false;
-    }
-
-    /**
-     * Os passageiros vão para casa depois de executar tudo no aeroporto
-     */
+    //As threads dos passageiros morrem
     public void goHome(){
 
     }
-
 
 }
 
