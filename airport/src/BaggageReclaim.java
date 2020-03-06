@@ -35,8 +35,4 @@ public class BaggageReclaim {
         }
     }
 
-
-    public void goHome(){
-
-    }
 }

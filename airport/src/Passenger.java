@@ -1,14 +1,8 @@
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Passenger implements Runnable{
-    protected final int AT_THE_DISEMBARKING_ZONE = 0;
-    protected final int AT_THE_LUGGAGE_COLLECTION_POINT = 1;
-    protected final int AT_THE_BAGGAGE_RECLAIM_OFFICE = 2;
-    protected final int EXITING_THE_ARRIVAL_TERMINAL = 3;
-    protected final int AT_THE_ARRIVAL_TRANSFER_TERMINAL = 4;
-    protected final int TERMINAL_TRANSFER = 5;
-    protected final int AT_THE_DEPARTURE_TRANSFER_TERMINAL = 6;
-    protected final int ENTERING_THE_DEPARTURE_TERMINAL = 7;
+
+    public int numBags;
 
     private boolean bag;
     private boolean takeBus;

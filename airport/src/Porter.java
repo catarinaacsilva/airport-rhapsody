@@ -3,10 +3,6 @@
 }*/
 
 public class Porter implements Runnable{
-    protected final int WAITING_FOR_A_PLANE_TO_LAND = 0;
-    protected final int AT_THE_PLANES_HOLD = 1;
-    protected final int AT_THE_LUGGAGE_BELT_CONVEYOR = 2;
-    protected final int AT_THE_STOREROOM = 3;
 
     public String statePorter(int state){
         if (state == 0)

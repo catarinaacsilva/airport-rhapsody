@@ -1,9 +1,4 @@
 public class BusDriver implements Runnable{
-    protected final int PARKING_AT_THE_ARRIVAL_TERMINAL = 0,
-    protected final int DRIVING_FORWARD = 1;
-    protected final int PARKING_AT_THE_DEPARTURE_TERMINAL = 2;
-    protected final int DRIVING_BACKWARD = 3;
-
     public String stateBusDriver(int state){
         if (state == 0)
             return "PARKING_AT_THE_ARRIVAL_TERMINAL";

@@ -1,71 +1,102 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class BaggageCollection {
+
     /**
-     * Foi buscar a mala e ja a tem
+     * Cada utilizador tem uma ou mais malas associadas
      */
-    private boolean hasBag;
+    Map<Passenger, ArrayList<Bag>> BagsToPassenger = new HashMap<>();
+
     /**
-     * Contar o numero de malas
+     * Quando as mala são enviadas para o tapete para serem recolhias
      */
-    private int count;
+    Stack<Bag> stackBags = new Stack();
+
+    /**
+     * Quando as mala são enviadas para o storeroom
+     */
+    Stack<Bag> stackStore = new Stack<>();
 
     private final Lock lock = new ReentrantLock();
-    private final Condition missing  = lock.newCondition();
+    //private final Condition missing  = lock.newCondition();
+
 
     /**
-     * Coleção de malas por voo
-     * @param hasBag
+     * Passageiro vai buscar a mala
+     * @param p
      */
-    public BaggageCollection(boolean hasBag){
-        this.hasBag = hasBag;
-        count = 0;
+    public void goCollectBag(Passenger[] p){
+        Bag auxBag = null;
+        for(int i=0; i<p.length; i++) {
+            auxBag = stackBags.pop();
+            while(!stackBags.empty()){
+                ArrayList<Bag> b = BagsToPassenger.get(p[i]);
+                for(int j=0; j<b.size(); j++){
+                    if(b.get(j).id == auxBag.id)
+                        p[i].numBags--;
+                        if(p[i].numBags == 0)
+                            p[i] = null;
+                }
+            }
+        }
     }
 
     /**
-     * Incrementa o numero de malas à medida que estao a ser guardadas
+     *  Porter coloca malas no tapete
+     * @param count
+     * @param bags
      */
-    public void BagsToCollect(){
+    public void addBags(int count, Bag bags){
+        //se não houver malas nao faz nada
+        if(count == 0){
+            return;
+        }
+
         lock.lock();
         try{
-            count ++;
-        }finally {
+            while(count > 0){
+                if(bags.transitOrNot == 0){ //malas para recolher
+                    stackBags.push(bags);
+                    count --;
+                }
+
+            }
+        }finally{
             lock.unlock();
         }
     }
 
     /**
-     * Apenas para saber se um passageiro tem malas
-     * @return
+     * Porter coloca malas no storeroom
+     * @param count
+     * @param bags
      */
-    public boolean getInfoBag(){
-        if (hasBag == true){
-            return true;
+    public void addStoreroom(int count, Bag bags){
+        //se não houver malas nao faz nada
+        if(count == 0){
+            return;
         }
-        return false;
-    }
-
-    /**
-     * Ir buscar uma mala
-     */
-    public void goCollectABag() throws InterruptedException { // execpeção porque estava a dar erro por causa do await
         lock.lock();
         try{
-            if(count == 0){
-                missing.await(); //tem que esperar que a mala seja encontrada
+            while(count > 0){
+                if(bags.transitOrNot == 1){ // malas em transito
+                    stackStore.push(bags);
+                    count --;
+                }
             }
-            else{
-                count --;
-                missing.signal(); //notifica quando o numero de malas for superior a 0 para que volte a tentar ver se a mala apareceu. TODO: Dar um id a malas e depois verificar???
-            }
-        }finally {
+        }finally{
             lock.unlock();
         }
     }
 
-    public void goHome(){
 
-    }
+
 }
+
+// Como só ha um porter, se ele estiver a colocar malas no tapete não poe estar a guardar no storeroom

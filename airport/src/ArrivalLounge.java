@@ -22,23 +22,4 @@ public class ArrivalLounge {
         this.numPersonBus = numPersonBus;
     }
 
-    public void goCollectABag(){
-
-    }
-
-    public void goHome(){
-
-    }
-
-    /**
-     * Pessoas à espera de um autocarro
-     */
-    //TODO: confirmar
-    public int takeABus(){
-        lock.lock();
-        try{
-
-        }
-        return numPersonBus;
-    }
 }
