@@ -2,12 +2,12 @@ package pt.ua.deti;
 
 public class Bag {
     /**
-     * Identificador da mala
+     * Bag id
      */
     public int id;
 
     /**
-     * Fornece informação de se esta mala vai ser recolhida pelo utilizador ou se vai entrar novamente no avião (escala)
+     * Given information about state of passenger (transit ou not)
      */
     public int transitOrNot;
 

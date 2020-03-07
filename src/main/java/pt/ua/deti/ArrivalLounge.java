@@ -10,12 +10,12 @@ public class ArrivalLounge {
     private final Condition enterOnBus  = lock_bus.newCondition();
 
     /**
-     * Numero de pessoas que vao buscar a mala
+     * Number of passengers that will grab their bag
      */
     private int numPersonBag;
 
     /**
-     * Numero de pessoas que vao apanhar autocarro
+     * Number of passengers that will catch the bus
      */
     private int numPersonBus;
 

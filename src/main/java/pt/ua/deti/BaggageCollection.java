@@ -10,12 +10,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class BaggageCollection {
 
     /**
-     * Cada utilizador tem uma ou mais malas associadas
+     * Each user has one or more bags
      */
     Map<Passenger, ArrayList<Bag>> BagsToPassenger;
 
     /**
-     * Quando as mala são enviadas para o tapete para serem recolhias
+     * Data struct to store the bags while the passengers are exiting the aeroplane
      */
     Stack<Bag> stackBags;
 
@@ -35,7 +35,7 @@ public class BaggageCollection {
     }
 
     /**
-     * Passageiro vai buscar a mala
+     * Passenger grabs the bag
      * @param p
      */
     public void goCollectBag(Passenger[] p){
@@ -63,7 +63,7 @@ public class BaggageCollection {
     }
 
     /**
-     *  pt.ua.deti.Porter coloca malas no tapete
+     * Porter adds bags
      * @param count
      * @param bags
      */

@@ -1,19 +1,21 @@
 package pt.ua.deti;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         GeneralRepositoryInformation gri = new GeneralRepositoryInformation();
         System.out.println(gri);
         Logger log = new Logger(gri);
 
         // Write initial line of the log
+        log.init();
         log.write();
 
         // Star all passenger
-        List<Passenger> passengers = gri.getPassenger();
+        List<Passenger> passengers = gri.getPassengers();
         List<Thread> tpassengers = new ArrayList<>(passengers.size());
         for(Passenger p : passengers) {
             Thread t = new Thread(p);
