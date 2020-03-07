@@ -1,5 +1,5 @@
-import java.awt.desktop.QuitEvent;
-import java.net.PasswordAuthentication;
+package pt.ua.deti;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -36,7 +36,7 @@ public class Bus {
     public Queue<Passenger> leaveBus(){
         Queue<Passenger> leaveBus = new LinkedList<>();
         while(p.size() > 0)
-            leaveBus.add(p.peek());
+            leaveBus.add(p.remove());
         return leaveBus;
     }
 }

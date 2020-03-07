@@ -1,3 +1,5 @@
+package pt.ua.deti;
+
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Passenger implements Runnable{
@@ -30,16 +32,16 @@ public class Passenger implements Runnable{
     }
 
     //TODO: usar o tipo de dados enumerado para ver o estado presente e seguinte
-
+    // Guardar estados ??
     /**
-     * Next state based on state machie
+     * Next state based on state machine
      * @param state
      * @return int that corresponds to next state
      */
     public int nextState(int state){
         int nextState = 0;
 
-        switch (state){
+        /*switch (state){
             case 0:
                 if (bag == true){
                     goCollectABag(); //Arrival lounge
@@ -50,21 +52,21 @@ public class Passenger implements Runnable{
                     state = 3;
                 }
                 else{
-                    goHome(); //ArrivalTerminalExit --> vai para casa
+                    goHome(); //pt.ua.deti.ArrivalTerminalExit --> vai para casa
                     state = 4;
                 }
                 break;
             case 1:
-                if(getInfoBag() == true){ //BaggageCollection -> saber se o pssageiro ja tem a mala
-                    goHome(); // ArrivalTerminalExit -->Se tiver vai para casa
+                if(getInfoBag() == true){ //pt.ua.deti.BaggageCollection -> saber se o pssageiro ja tem a mala
+                    goHome(); // pt.ua.deti.ArrivalTerminalExit -->Se tiver vai para casa
                     state = 4;
                 }
                 else if(getInfoBag() == false){
-                    goCollectABag(); //BaggageCollection --> continua a espera da mala
+                    goCollectABag(); //pt.ua.deti.BaggageCollection --> continua a espera da mala
                     state = 1;
                 }
                 else{
-                    reportMissingBags(); //BaggageReclaim --> reclama a falta da mala
+                    reportMissingBags(); //pt.ua.deti.BaggageReclaim --> reclama a falta da mala
                     state = 2;
                 }
                 break;
@@ -73,7 +75,7 @@ public class Passenger implements Runnable{
                     state = 2;
                 }
                 else{
-                    goHome(); //ArrivalTerminalExit
+                    goHome(); //pt.ua.deti.ArrivalTerminalExit
                 }
                 break;
             case 3:
@@ -104,7 +106,7 @@ public class Passenger implements Runnable{
                 else{
                     state = 6;
                 }
-        }
+        }*/
         return nextState;
     }
 

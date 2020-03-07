@@ -1,8 +1,9 @@
+package pt.ua.deti;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -19,20 +20,18 @@ public class BaggageCollection {
     Stack<Bag> stackBags;
 
     /**
-     * Quando as mala são enviadas para o storeroom
+     * Por passageiro para saber se ja tem as malas todas
      */
-    Stack<Bag> stackStore;
-
     public boolean total;
 
-    private final Lock lock = new ReentrantLock();
+    private final Lock lock;
     //private final Condition missing  = lock.newCondition();
 
     public BaggageCollection(){
         BagsToPassenger = new HashMap<>();
         stackBags = new Stack();
-        stackStore = new Stack<>();
         total = false;
+        lock = new ReentrantLock();
     }
 
     /**
@@ -59,11 +58,12 @@ public class BaggageCollection {
 
 
     public boolean haveTotalBags(){
+
         return total;
     }
 
     /**
-     *  Porter coloca malas no tapete
+     *  pt.ua.deti.Porter coloca malas no tapete
      * @param count
      * @param bags
      */
@@ -87,28 +87,7 @@ public class BaggageCollection {
         }
     }
 
-    /**
-     * Porter coloca malas no storeroom
-     * @param count
-     * @param bags
-     */
-    public void addStoreroom(int count, Bag bags){
-        //se não houver malas nao faz nada
-        if(count == 0){
-            return;
-        }
-        lock.lock();
-        try{
-            while(count > 0){
-                if(bags.transitOrNot == 1){ // malas em transito
-                    stackStore.push(bags);
-                    count --;
-                }
-            }
-        }finally{
-            lock.unlock();
-        }
-    }
+
 
 
 

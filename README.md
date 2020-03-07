@@ -1,22 +1,20 @@
 # Airport rhapsody
 
 
-## Requirements
+# Shared
 
-- Java
+- pt.ua.deti.Bus
+- Collect a bag (não usar tipos de dados referências mas sim copiar o valor):
+    - pt.ua.deti.Passenger
+    - pt.ua.deti.Porter
+
 
 ## Implementation
 
 - threads: 3 classes (passengers, porter, bus driver)
 
-- On each class: function on diagram
+- 8 Monitors
 
-- Monitor: class to manage all threads
+## Requirements
 
-## Authors
-
-* **Catarina Silva** - [catarinaacsilva](https://github.com/catarinaacsilva)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+- Java

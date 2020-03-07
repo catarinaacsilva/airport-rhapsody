@@ -1,4 +1,4 @@
-import com.sun.jdi.connect.spi.TransportService;
+package pt.ua.deti;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -1,3 +1,5 @@
+package pt.ua.deti;
+
 public class BusDriver implements Runnable{
     public String stateBusDriver(int state){
         if (state == 0)
@@ -13,4 +15,8 @@ public class BusDriver implements Runnable{
     }
 
 
+    @Override
+    public void run() {
+
+    }
 }

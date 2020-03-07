@@ -1,3 +1,5 @@
+package pt.ua.deti;
+
 public class ArrivalTerminalExit {
     
 
