@@ -5,21 +5,44 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * General Repository of Information
+ * <p>
+ * This will work as a global repository for every entity in the simulation
+ * 
+ * @author Catarina Silva
+ * @author Duarte Dias
+ * @version 1.0
+ */
 public class GeneralRepositoryInformation {
-    private final int K, N, M, T;
-    private final double P;
-    private final String L;
-    private final List<Passenger> passengers;
-    private final Porter porter;
-    private final BusDriver busDriver;
+    protected final int K, N, M, T;
+    protected final double P;
+    protected final String L;
+    /** {@link List} of the planes */
+    protected final List<Plane> planes;
+    protected final Porter porter;
+    protected final BusDriver busDriver;
+    protected final PlaneHold planeHold;
+    protected final ArrivalLounge arrivalLounge;
 
 
+    /**
+     * Creates a GeneralRepositoryInformation
+     * <p>
+     * It loads the "config.properties" in the resources folder.
+     */
     public GeneralRepositoryInformation() {
         this("config.properties");
     }
 
-    public GeneralRepositoryInformation(final String propFileName) {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+    /**
+     * Creates a GeneralRepositoryInformation
+     * <p>
+     * It loads the configuration file from the resources folder.
+     * @param filename the filename of the configuration file
+     */
+    public GeneralRepositoryInformation(final String filename) {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename);
         Properties prop = new Properties();
         try {
             prop.load(inputStream);
@@ -34,50 +57,10 @@ public class GeneralRepositoryInformation {
         L = prop.getProperty("L");
         
         //TODO: Fix me....
-        passengers = null;
+        planes = null;
         porter = null;
         busDriver = null;
-    }
-
-    public final int planeLandings(){
-        return K;
-    }
-
-    public final int numberPassengers(){
-        return N;
-    }
-
-    public final int piecesLuggage(){
-        return M;
-    }
-
-    public final int busSeatingPlaces(){
-        return T;
-    }
-
-    public final double missingBagProbability(){
-        return P;
-    }
-
-    public final String logFile() {
-        return L;
-    }
-
-    public final List<Passenger> getPassengers() {
-        return passengers;
-    }
-
-    public final Porter getPorter() {
-        return porter;
-    }
-
-    public final BusDriver getBusDriver() {
-        return busDriver;
-    }
-
-    @Override
-    public final String toString() {
-        return String.format("planeLandings %d%nnumberPassengers %d%npiecesLuggage %d%nbusSeatingPlaces %d%nmissingBagProbability %f%n",
-                K, N, M, T, P);
+        planeHold = null;
+        arrivalLounge = null;
     }
 }

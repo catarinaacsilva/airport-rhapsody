@@ -1,138 +1,49 @@
 package pt.ua.deti;
 
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.List;
 
-public class Passenger implements Runnable{
-
-    public int numBags;
-    public int state;
-    public int id;
-
-    public Passenger (int numBags){
-        this.numBags = numBags;
-        state = 0; // Estado inicial
-        id = 0; //TODO: tem que ser um número sequecial (contador genérico)
+/**
+ * Passenger entity.
+ * 
+ * @author Catarina Silva
+ * @author Duarte Dias
+ * @version 1.0
+ */
+public class Passenger implements Runnable {
+    /** States that descibre the life cycle of a {@link Passenger}*/
+    protected static enum State {
+        AT_THE_DISEMBARKING_ZONE, AT_THE_LUGGAGE_COLLECTION_POINT, AT_THE_BAGGAGE_RECLAIM_OFFICE,
+        EXITING_THE_ARRIVAL_TERMINAL, AT_THE_ARRIVAL_TRANSFER_TERMINAL, TERMINAL_TRANSFER,
+        AT_THE_DEPARTURE_TRANSFER_TERMINAL, ENTERING_THE_DEPARTURE_TERMINAL
     }
-
+    /** {@link List} of bag ids */
+    private final List<Integer> bagIds;
+    /** {@link State} the state of the {@link Passenger} */
+    private State state;
+    /** represents the id of this passenger */
+    private final int id;
 
     /**
-     * Goes to the next state and verify if it is the end state.
+     * Create a new {@link Passenger}
+     * @param id identification
+     * @param bagIds {@List} with all the ids from its bags 
      */
-    @Override
-    public void run(){
-        boolean done = false;
+    public Passenger(final int id, final List<Integer> bagIds) {
+        this.bagIds = bagIds;
+        this.id = id;
+        // Initial state
+        state = State.AT_THE_DISEMBARKING_ZONE;
+    }
 
-        while (!done) {
-            state = nextState(state);
-            if (state == 7 || state == 3) {
-                done = true;
-            }
-            System.out.println(this);
+    @Override
+    public void run() {
+        while (!isDone()) {
+            
         }
     }
 
-    //TODO: usar o tipo de dados enumerado para ver o estado presente e seguinte
-    // Guardar estados ??
-    /**
-     * Next state based on state machine
-     * @param state
-     * @return int that corresponds to next state
-     */
-    public int nextState(int state){
-        int nextState = 0;
-
-        /*switch (state){
-            case 0:
-                if (bag == true){
-                    goCollectABag(); //Arrival lounge
-                    state = 1;
-                }
-                else if (takeBus == true){
-                    takeABus(); //Arrival lounge
-                    state = 3;
-                }
-                else{
-                    goHome(); //pt.ua.deti.ArrivalTerminalExit --> vai para casa
-                    state = 4;
-                }
-                break;
-            case 1:
-                if(getInfoBag() == true){ //pt.ua.deti.BaggageCollection -> saber se o pssageiro ja tem a mala
-                    goHome(); // pt.ua.deti.ArrivalTerminalExit -->Se tiver vai para casa
-                    state = 4;
-                }
-                else if(getInfoBag() == false){
-                    goCollectABag(); //pt.ua.deti.BaggageCollection --> continua a espera da mala
-                    state = 1;
-                }
-                else{
-                    reportMissingBags(); //pt.ua.deti.BaggageReclaim --> reclama a falta da mala
-                    state = 2;
-                }
-                break;
-            case 2:
-                if(getInfoReclaimBag() == true){
-                    state = 2;
-                }
-                else{
-                    goHome(); //pt.ua.deti.ArrivalTerminalExit
-                }
-                break;
-            case 3:
-                if(busAvailable == true){
-                    enterTheBus();
-                    state = 5;
-                }
-                else{
-                    state = 3;
-                }
-                break;
-            case 4:
-                break;
-            case 5:
-                if(endBus == true){
-                    leaveTheBus();
-                    state = 6;
-                }
-                else{
-                    state = 5;
-                }
-                break;
-            case 6:
-                if(nextLegAvailable == true){
-                    prepareNextLeg();
-                    state = 7;
-                }
-                else{
-                    state = 6;
-                }
-        }*/
-        return nextState;
-    }
-
-    /**
-     * Present state
-     * @param state
-     * @return Name of the state
-     */
-    public String statePassenger(int state){
-        if (state == 0)
-            return "AT_THE_DISEMBARKING_ZONE";
-        else if (state == 1)
-            return "AT_THE_LUGGAGE_COLLECTION_POINT";
-        else if (state == 2)
-            return "AT_THE_BAGGAGE_RECLAIM_OFFICE";
-        else if (state == 3)
-            return "EXITING_THE_ARRIVAL_TERMINAL";
-        else if (state == 4)
-            return "AT_THE_ARRIVAL_TRANSFER_TERMINAL";
-        else if (state == 5)
-            return "TERMINAL_TRANSFER";
-        else if (state == 6)
-            return "AT_THE_DEPARTURE_TRANSFER_TERMINAL";
-        else if (state == 7)
-            return "ENTERING_THE_DEPARTURE_TERMINAL";
-        else
-            return "Invalid state";
+    
+    private boolean isDone() {
+        return false;
     }
 }

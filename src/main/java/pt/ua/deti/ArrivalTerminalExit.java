@@ -1,8 +1,6 @@
 package pt.ua.deti;
 
 public class ArrivalTerminalExit {
-    
-
     public ArrivalTerminalExit(){
 
     }
@@ -11,7 +9,6 @@ public class ArrivalTerminalExit {
     public void goHome(){
 
     }
-
 }
 
 

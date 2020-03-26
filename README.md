@@ -1,46 +1,35 @@
-# Airport rhapsody
+# aiport-rhapsody
 
-
-# Shared
-
-- pt.ua.deti.Bus
-- Collect a bag (não usar tipos de dados referências mas sim copiar o valor):
-    - pt.ua.deti.Passenger
-    - pt.ua.deti.Porter
-
-
-## Implementation
-
-- threads: 3 classes (passengers, porter, bus driver)
-
-- 8 Monitors
+An implementation in Java of the aiport-rhapsody.
+For more information check the [description file](description.pdf)
 
 ## Requirements
 
 - Java 8
+- Maven
 
-## Compilation and execution
+## Run the simulation
 
-The whole project was done in Maven, as such to compile this simulation just run:
+Run the following command
+
 ```bash
-mvn clean compile
+mvn clean compile exec:java
 ```
 
-The javadoc can be generate with the following command:
-```
+## Compile javadoc
+
+Run the following command
+
+```bash
 mvn javadoc:javadoc
-```
-
-In order to run the simualtion simple execute the following command:
-```
-mvn exec:java -Dexec.mainClass="pt.ua.deti.Main"
+firefox target/site/apidocs/index.html
 ```
 
 ## Authors
 
-* **Catarina Silva** 
-* **Duarte Dias**
+- **Catarina Silva** - [catarinaacsilva](https://github.com/catarinaacsilva)
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+

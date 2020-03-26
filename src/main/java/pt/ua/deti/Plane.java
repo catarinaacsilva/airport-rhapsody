@@ -2,39 +2,34 @@ package pt.ua.deti;
 
 import java.util.List;
 
+/**
+ * Class that represents a plane
+ * 
+ * @author Catarina Silva
+ * @author Duarte Dias
+ * @version 1.0
+ */
 public class Plane {
-    /**
-     * Represents the flight number
-     */
+    /** {@link List} to the passengers of the plane */
+    private final List<Passenger> passengers;
+
+    /** {@link List} of the bags of the passengers */
+    private final List<Bag> bags;
+    
+    /** Represents the flight number */
     private final int fn;
 
     /**
-     * Represents the number of bags
-     */
-    private int bn;
-
-    /**
      * Creates a plane object
+     * 
      * @param fn flight number
-     * @param passengers list of passengers
+     * @param passengers {@link List} of passengers
+     * @param bags {@link List} of bags
      */
-    public Plane(final int fn, List<Passenger> passengers) {
+    public Plane(final int fn, final List<Passenger> passengers, final List<Bag> bags) {
         this.fn = fn;
-        int tmp = 0;
-        for (Passenger p : passengers) {
-            tmp += p.numBags;
-        }
-        this.bn = tmp;
-    }
-
-    /**
-     * Creates a plane object
-     * @param fn flight number
-     * @param bn list of passengers
-     */
-    public Plane(final int fn, final int bn) {
-        this.fn = fn;
-        this.bn = bn;
+        this.passengers = passengers;
+        this.bags = bags;
     }
 
     /**
@@ -46,17 +41,18 @@ public class Plane {
     }
 
     /**
-     * Returns the number of bags
+     * Returns the number of bags.
      * @return the number of bags
      */
     public synchronized int bn() {
-        return bn;
+        return bags.size();
     }
 
     /**
-     * Remove a bag from aeroplane
+     * Returns the {@link List} of passengers.
+     * @return the {@link List} of passengers
      */
-    public synchronized void removeBag() {
-        bn -= 1;
+    public List<Passenger> getPassengers() {
+        return passengers;
     }
 }

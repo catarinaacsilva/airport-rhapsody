@@ -1,42 +1,41 @@
 package pt.ua.deti;
 
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Temporary Storage Area.
+ * 
+ * @author Catarina Silva
+ * @author Duarte Dias
+ * @version 1.0
+ */
 public class TemporaryStorageArea {
 
     /**
      * Quando as mala são enviadas para o storeroom
      */
-    Stack<Bag> stackStore;
+    private final List<Bag> bags;
 
+    /** */
     private final Lock lock = new ReentrantLock();
 
     public TemporaryStorageArea(){
-        stackStore = new Stack<>();
-
+        bags = new ArrayList<>();
     }
 
     /**
-     * pt.ua.deti.Porter coloca malas no storeroom
-     * @param count
-     * @param bags
+     * Method used by the porter to store bags in the Temporary Storage Area.
+     * 
+     * @param b {@link Bag} carry be the {@link Porter}
      */
-    public void addStoreroom(int count, Bag bags){
-        //se não houver malas nao faz nada
-        if(count == 0){
-            return;
-        }
+    public void storeBag(final Bag b) {
         lock.lock();
-        try{
-            while(count > 0){
-                if(bags.transitOrNot == 1){ // malas em transito
-                    stackStore.push(bags);
-                    count --;
-                }
-            }
-        }finally{
+        try {
+            bags.add(b);
+        } finally {
             lock.unlock();
         }
     }

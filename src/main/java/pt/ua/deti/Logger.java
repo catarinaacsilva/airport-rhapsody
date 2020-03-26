@@ -6,6 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Passenger entity.
+ * 
+ * @author Catarina Silva
+ * @author Duarte Dias
+ * @version 1.0
+ */
 public class Logger {
 
     private final GeneralRepositoryInformation gri;
@@ -13,13 +20,13 @@ public class Logger {
 
     public Logger(final GeneralRepositoryInformation gri) throws IOException {
         this.gri = gri;
-        final Path path = Paths.get(gri.logFile());
+        final Path path = Paths.get(gri.L);
         writer = Files.newBufferedWriter(path);
     }
 
     public synchronized void init() throws IOException {
         // First Line
-        int space = 2 + (4 + 3 * (gri.numberPassengers() + gri.busSeatingPlaces())) / 2;
+        int space = 2 + (4 + 3 * (gri.N + gri.T)) / 2;
         final StringBuilder sb = new StringBuilder();
         
         sb.append("PLANE    PORTER");
@@ -33,16 +40,16 @@ public class Logger {
         // Second Line
         sb.setLength(0);
         sb.append("FN BN  Stat CB SR   Stat ");
-        for (int i = 0; i < gri.numberPassengers(); i++) {
+        for (int i = 0; i < gri.N; i++) {
             sb.append("Q" + (i + 1) + " ");
         }
-        for (int i = 0; i < gri.busSeatingPlaces(); i++) {
+        for (int i = 0; i < gri.T; i++) {
             sb.append("S" + (i + 1) + " ");
         }
         final String str1 = sb.toString();
 
         // Third line
-        space = 3 * (gri.numberPassengers() + gri.busSeatingPlaces()) + 30;
+        space = 3 * (gri.N + gri.T) + 30;
         sb.setLength(0);
         for(int i = 0; i < space; i++) {
             sb.append(' ');
@@ -52,7 +59,7 @@ public class Logger {
 
         // Fourth line
         sb.setLength(0);
-        for (int i = 0; i < gri.numberPassengers(); i++) {
+        for (int i = 0; i < gri.N; i++) {
             sb.append(String.format("St%d Si%d NR%d NA%d ", (i+1), (i+1), (i+1), (i+1)));
         }
         String str4 = sb.toString();
