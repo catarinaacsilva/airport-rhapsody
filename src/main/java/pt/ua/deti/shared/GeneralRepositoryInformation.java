@@ -66,13 +66,13 @@ public class GeneralRepositoryInformation implements Closeable {
     private int[] na = new int[6];
     /** {@link BufferedWriter} used to write on a file */
     private PrintWriter writer;
-
+    /** Number of passengers which have this airport as their final destination */
     private int nFDT;
-
+    /** Number of passengers in transit */
     private int nTRT;
-
+    /** Number of bags that should have been transported in the the planes hold */
     private int nBags;
-
+    /** Number of bags that were lost */
     private int nMissing;
 
     /**
@@ -182,6 +182,44 @@ public class GeneralRepositoryInformation implements Closeable {
         // Ouput the lines
         System.out.println(str);
         writer.println(str);
+    }
+
+    /**
+     * Update the number of passengers which have this airport as their final
+     * destination.
+     * 
+     * @param inc the amount to increase
+     */
+    public synchronized void updateTRT(final int inc) {
+        nTRT += inc;
+    }
+
+    /**
+     * Update the number of passengers in transit.
+     * 
+     * @param inc the amount to increase
+     */
+    public synchronized void updateFDT(final int inc) {
+        nFDT += inc;
+    }
+
+    /**
+     * Update de number of bags that should have been transported in the the planes
+     * hold.
+     * 
+     * @param inc the amount to increase
+     */
+    public synchronized void updateBags(final int inc) {
+        nBags += inc;
+    }
+
+    /**
+     * Update de number of bags that were lost.
+     * 
+     * @param inc the amount to increase
+     */
+    public synchronized void updateMissing(final int inc) {
+        nMissing += inc;
     }
 
     /**

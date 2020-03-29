@@ -79,8 +79,12 @@ public class AirportConcSol {
             Plane plane = planes.get(i);
             // Update the plane information
             gri.updatePlane(plane.fn(), plane.bn());
-            // Reset Arrival lounge
+            gri.updateBags(plane.bn());
+            // Reset the necessary shared location to be ready for a new set of passengers
             al.reset();
+            bcp.reset();
+            ate.reset();
+            dte.reset();
             // Load the Plane Hold
             pl.loadBags(plane.getBags(), (i + 1) == planes.size());
             // Star the passengers of the plane
@@ -137,8 +141,7 @@ public class AirportConcSol {
             for (int j = 0; j < N; j++) {
                 List<Integer> bagIds = new ArrayList<>();
                 int numberBags = ThreadLocalRandom.current().nextInt(1, M + 1);
-
-                boolean transit = getRandomBoolean(.5);
+                boolean transit = false; //getRandomBoolean(.5);
                 for (int k = 0; k < numberBags; k++) {
 
                     bagIds.add(globalBagId);

@@ -31,6 +31,18 @@ public class DepartureTerminalEntrance {
         this.ate = ate;
     }
 
+    /**
+     * Reset the {@link DepartureTerminalEntrance} by setting the blocked to 0.
+     */
+    public void reset() {
+        lock.lock();
+        try {
+            blocked = 0;
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void prepareNextLeg() {
         lock.lock();
         try {

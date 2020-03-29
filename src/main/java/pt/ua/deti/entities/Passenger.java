@@ -58,6 +58,7 @@ public class Passenger implements Runnable {
     private final ArrivalTerminalExit ate;
     /** {@link GeneralRepositoryInformation} serves as log */
     private final GeneralRepositoryInformation gri;
+    /** Flag used to indicate if the life cycle is done */
     private boolean done = false;
 
     /**
@@ -82,8 +83,6 @@ public class Passenger implements Runnable {
         this.ate = ate;
         this.gri = gri;
         nr = bagsId.size();
-
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
     }
 
     @Override
@@ -109,6 +108,7 @@ public class Passenger implements Runnable {
     }
 
     private void whatShouldIDo() {
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
         al.whatShouldIDo();
         if (situation == Situation.TRT) {
             state = State.AT_THE_ARRIVAL_TRANSFER_TERMINAL;
@@ -142,17 +142,20 @@ public class Passenger implements Runnable {
     }
 
     private void reportMissingBags() {
+        final int missing = bagsMissing.size();
         for(Integer bagId : bagsMissing) {
             bro.reportMissingBag(bagId);
         }
         bagsMissing.clear();
         state = State.EXITING_THE_ARRIVAL_TERMINAL;
         gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updateMissing(missing);
     }
 
     private void goHome(){
         ate.goHome();
         gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
         done = true;
+        gri.updateFDT(1);
     }
 }

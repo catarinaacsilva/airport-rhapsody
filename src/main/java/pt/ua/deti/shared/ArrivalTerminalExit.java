@@ -36,6 +36,18 @@ public class ArrivalTerminalExit {
     }
 
     /**
+     * Reset the {@link DepartureTerminalEntrance} by setting the blocked to 0.
+     */
+    public void reset() {
+        lock.lock();
+        try {
+            blocked = 0;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
      * 
      */
     public void goHome() {

@@ -34,6 +34,7 @@ public class Porter implements Runnable {
     private final TemporaryStorageArea tsa;
     /** Temporary storage to move {@link Bag} */
     private Bag temp = null;
+    /** Flag used to indicate if the life cycle is done */
     private boolean done = false;
 
     /**
@@ -77,15 +78,6 @@ public class Porter implements Runnable {
                     break;
             }
         }
-    }
-
-    /**
-     * Returns true if the entity is done; otherwise false.
-     * 
-     * @return true if the entity is done; otherwise false
-     */
-    private boolean isDone() {
-        return false;
     }
 
     /**

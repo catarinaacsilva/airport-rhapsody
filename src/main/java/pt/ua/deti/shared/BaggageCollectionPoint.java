@@ -101,4 +101,16 @@ public class BaggageCollectionPoint {
             lock.unlock();
         }
     }
+
+    /**
+     * Reset the {@link BaggageCollectionPoint} by setting the noMoreBags has false.
+     */
+    public void reset() {
+        lock.lock();
+        try {
+            noMoreBags = false;
+        } finally {
+            lock.unlock();
+        }
+    }
 }
