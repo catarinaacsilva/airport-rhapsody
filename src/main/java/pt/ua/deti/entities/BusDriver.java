@@ -1,19 +1,27 @@
 package pt.ua.deti.entities;
 
-public class BusDriver implements Runnable{
-    public String stateBusDriver(int state){
-        if (state == 0)
-            return "PARKING_AT_THE_ARRIVAL_TERMINAL";
-        else if (state == 1)
-            return "DRIVING_FORWARD";
-        else if (state == 2)
-            return "PARKING_AT_THE_DEPARTURE_TERMINAL";
-        else if (state == 3)
-            return "DRIVING_BACKWARD";
-        else
-            return "Invalid code";
-    }
+import pt.ua.deti.shared.GeneralRepositoryInformation;
 
+/**
+ * Bus Driver entity.
+ * 
+ * @author Catarina Silva
+ * @author Duarte Dias
+ * @version 1.0
+ */
+public class BusDriver implements Runnable{
+    /** States that descibre the life cycle of a {@link BusDriver} */
+    protected static enum State {
+        PARKING_AT_THE_ARRIVAL_TERMINAL, DRIVING_FORWARD, PARKING_AT_THE_DEPARTURE_TERMINAL, DRIVING_BACKWARD
+    }
+    /** {@link State} the state of the {@link Porter} */
+    private State state;
+    /** {@link GeneralRepositoryInformation} serves as log */
+    private final GeneralRepositoryInformation gri;
+
+    public BusDriver(final GeneralRepositoryInformation gri) {
+        this.gri = gri;
+    }
 
     @Override
     public void run() {

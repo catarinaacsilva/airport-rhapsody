@@ -67,6 +67,14 @@ public class GeneralRepositoryInformation implements Closeable {
     /** {@link BufferedWriter} used to write on a file */
     private PrintWriter writer;
 
+    private int nFDT;
+
+    private int nTRT;
+
+    private int nBags;
+
+    private int nMissing;
+
     /**
      * Creates a {@link GeneralRepositoryInformation}
      * 
@@ -77,7 +85,7 @@ public class GeneralRepositoryInformation implements Closeable {
         Arrays.fill(si, -1);
         Arrays.fill(nr, -1);
         Arrays.fill(na, -1);
-        
+
         try {
             writer = new PrintWriter(new FileWriter(filename));
         } catch (IOException e) {
@@ -115,37 +123,45 @@ public class GeneralRepositoryInformation implements Closeable {
         sb.append(String.format("%2d ", cb));
         sb.append(String.format("%2d   ", sr));
         sb.append(String.format("%s  ", bState2str(bstat)));
-        for(int i = 0; i < q.length; i++) {
-            if(q[i] > 0) {
+        for (int i = 0; i < q.length; i++) {
+            if (q[i] > 0) {
                 sb.append(String.format("%2d ", q[i]));
             } else {
                 sb.append(" - ");
             }
         }
         sb.append(" ");
-        for(int i = 0; i < s.length; i++) {
-            if(s[i] > 0) {
+        for (int i = 0; i < s.length; i++) {
+            if (s[i] > 0) {
                 sb.append(String.format("%2d ", s[i]));
             } else {
                 sb.append(" - ");
             }
         }
         final String str0 = sb.toString();
-        
+
         // format the second line (Passenger)
         sb.setLength(0);
-        for(int i = 0; i < st.length; i++) {
+        for (int i = 0; i < st.length; i++) {
             sb.append(String.format("%s ", st2str(st[i])));
             sb.append(String.format("%s ", situation2str(si[i])));
-            if(nr[i] > 0) {sb.append(String.format("%2d  ", nr[i]));} else {sb.append(" -  ");}
-            if(na[i] > 0) {sb.append(String.format("%2d  ", na[i]));} else {sb.append(" -  ");}
+            if (nr[i] >= 0) {
+                sb.append(String.format("%2d  ", nr[i]));
+            } else {
+                sb.append(" -  ");
+            }
+            if (na[i] >= 0) {
+                sb.append(String.format("%2d  ", na[i]));
+            } else {
+                sb.append(" -  ");
+            }
         }
         final String str1 = sb.toString();
-        
+
         // Complete the lines
         final String str = String.format("%s%n%s", str0, str1);
 
-        // Ouput the header
+        // Ouput the lines
         System.out.println(str);
         writer.println(str);
     }
@@ -154,68 +170,181 @@ public class GeneralRepositoryInformation implements Closeable {
      * Write the final report.
      */
     public void writeReport() {
-        
+        final String str0 = String.format("N. of passengers which have this airport as their final destination = %2d",
+                nFDT);
+        final String str1 = String.format("N. of passengers in transit = %2d", nTRT);
+        final String str2 = String.format("N. of bags that should have been transported in the the planes hold = %2d",
+                nBags);
+        final String str3 = String.format("N. of bags that were lost = %2d", nMissing);
+
+        final String str = String.format("%nFinal report%n%s%n%s%n%s%n%s", str0, str1, str2, str3);
+
+        // Ouput the lines
+        System.out.println(str);
+        writer.println(str);
+    }
+
+    /**
+     * Update the {@link Plane} state.
+     * 
+     * @param fn flight number
+     * @param bn number of pieces of luggage presently at the plane's hold
+     */
+    public synchronized void updatePlane(final int fn, final int bn) {
+        this.fn = fn;
+        this.bn = bn;
+        writeLine();
+    }
+
+    /**
+     * Update the {@link PlaneHold} state.
+     * 
+     * @param bn number of pieces of luggage presently at the plane's hold
+     */
+    public synchronized void updatePlaneHold(final int bn) {
+        this.bn = bn;
+        writeLine();
+    }
+
+    /**
+     * Update the {@link Porter} state.
+     * 
+     * @param pstat the {@link Porter} state
+     */
+    public synchronized void updatePStat(final int pstat) {
+        this.pstat = pstat;
+        writeLine();
+    }
+
+    /**
+     * Update the number of pieces of luggage presently on the conveyor belt.
+     * 
+     * @param cb number of pieces of luggage presently on the conveyor belt
+     */
+    public synchronized void updateConveyorBelt(final int cb) {
+        this.cb = cb;
+        writeLine();
+    }
+
+    /**
+     * Update the number of pieces of luggage belonging to passengers in transit
+     * presently stored at the storeroom.
+     * 
+     * @param sr number of pieces of luggage belonging to passengers in transit
+     *           presently stored at the storeroom
+     */
+    public synchronized void updateStoreroom(final int sr) {
+        this.sr = sr;
+        writeLine();
+    }
+
+    /**
+     * Update the {@link Passenger} information
+     * 
+     * @param id        the identification of the {@link Passenger}
+     * @param state     the new state of the {@link Passenger}
+     * @param situation the situation of the {@link Passenger}
+     * @param bags      number of pieces of luggage the {@link Passenger} carried at
+     *                  the start of her journey
+     * @param collected number of pieces of luggage the {@link Passenger} she has
+     *                  presently collected
+     */
+    public synchronized void updatePassenger(final int id, final int state, final int situation, final int bags,
+            final int collected) {
+        st[id - 1] = state;
+        si[id - 1] = situation;
+        nr[id - 1] = bags;
+        na[id - 1] = collected;
+        writeLine();
     }
 
     /**
      * Returns the State of the {@link Porter} converted into a {@link String}
+     * 
      * @param state State of the {@link Porter}
      * @return the State of the {@link Porter} converted into a {@link String}
      */
     private static String pState2str(final int state) {
-        switch(state) {
-            case 0: return "WPTL";
-            case 1: return "APLH";
-            case 2: return "ALCB";
-            case 3: return "ASTR";
-            default: return "WPTL";
+        switch (state) {
+            case 0:
+                return "WPTL";
+            case 1:
+                return "APLH";
+            case 2:
+                return "ALCB";
+            case 3:
+                return "ASTR";
+            default:
+                return "WPTL";
         }
     }
 
     /**
      * Returns the State of the {@link BusDriver} converted into a {@link String}
+     * 
      * @param state State of the {@link BusDriver}
      * @return the State of the {@link BusDriver} converted into a {@link String}
      */
     private static String bState2str(final int state) {
-        switch(state) {
-            case 0: return "PKAT";
-            case 1: return "DRFW";
-            case 2: return "PKDT";
-            case 3: return "DRBW";
-            default: return "PKAT";
+        switch (state) {
+            case 0:
+                return "PKAT";
+            case 1:
+                return "DRFW";
+            case 2:
+                return "PKDT";
+            case 3:
+                return "DRBW";
+            default:
+                return "PKAT";
         }
     }
 
     /**
      * Returns the State of the {@link Passenger} converted into a {@link String}
+     * 
      * @param state State of the {@link Passenger}
      * @return the State of the {@link Passenger} converted into a {@link String}
      */
-    private static String st2str(final int state) {
-        switch(state) {
-            case 0: return "WSD";
-            case 1: return "LCP";
-            case 2: return "BRO";
-            case 3: return "EAT";
-            case 4: return "ATT";
-            case 5: return "TRT";
-            case 6: return "DTT";
-            case 7: return "EDT";
-            default: return "---";
+    public static String st2str(final int state) {
+        switch (state) {
+            case 0:
+                return "WSD";
+            case 1:
+                return "LCP";
+            case 2:
+                return "BRO";
+            case 3:
+                return "EAT";
+            case 4:
+                return "ATT";
+            case 5:
+                return "TRT";
+            case 6:
+                return "DTT";
+            case 7:
+                return "EDT";
+            default:
+                return "---";
         }
     }
 
     /**
-     * Returns the situation of the {@link Passenger} converted into a {@link String}
+     * Returns the situation of the {@link Passenger} converted into a
+     * {@link String}
+     * 
      * @param situaion situation of the {@link Passenger}
-     * @return the situation of the {@link Passenger} converted into a {@link String}
+     * @return the situation of the {@link Passenger} converted into a
+     *         {@link String}
      */
     private static String situation2str(final int situaion) {
-        switch(situaion) {
-            case 0: return "TRT";
-            case 1: return "FDT";
-            default: return "---";
+        switch (situaion) {
+            case 0:
+                return "TRT";
+            case 1:
+                return "FDT";
+            default:
+                return "---";
         }
     }
 

@@ -12,21 +12,52 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 1.0
  */
 public class ArrivalLounge {
+    /** {@link Lock} used by the entities to change the internal state */
     private final Lock lock = new ReentrantLock();
-    private final Condition cond  = lock.newCondition();
-    private int disembark, totalPassengers;
+    /** {@link Condition} used by the {@link Porter} to wait for all {@link Passenger} */
+    private final Condition cond = lock.newCondition();
+    /** The number of {@link Passenger} that have disembarked */
+    private int disembark;
+    /** The total number of {@link Passenger} */
+    private int totalPassengers;
+    /** Flag used to notify the {@link Porter} if it is a new plane */
+    private boolean newPlane;
 
-    public ArrivalLounge(final int totalPassengers){
-       disembark = 0;
-       this.totalPassengers = totalPassengers;
+    /**
+     * Creates a {@link ArrivalLounge}
+     * @param totalPassengers the number of {@link pt.ua.deti.entities.Passenger} in
+     *                        the {@link pt.ua.deti.common.Plane}
+     */
+    public ArrivalLounge(final int totalPassengers) {
+        disembark = 0;
+        newPlane = true;
+        this.totalPassengers = totalPassengers;
     }
 
+    /**
+     * Reset the {@link ArrivalLounge} by setting the disembark at zero.
+     */
+    public void reset() {
+        lock.lock();
+        try {
+            disembark = 0;
+            newPlane = true;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * The {@link Porter} takes a rest and waits for all the {@link Passenger} to
+     * leave the {@link Plane}.
+     */
     public void takeARest() {
         lock.lock();
-        try{
-            while(disembark < totalPassengers) {
-                cond.wait();
+        try {
+            while (disembark < totalPassengers || !newPlane) {
+                cond.await();
             }
+            newPlane = false;
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -34,7 +65,16 @@ public class ArrivalLounge {
         }
     }
 
+    /**
+     * The {@link Passenger} indicates that has left the {@link Plane}.
+     */
     public void whatShouldIDo() {
-        cond.signalAll();
+        lock.lock();
+        try {
+            disembark++;
+            cond.signal();
+        } finally {
+            lock.unlock();
+        }
     }
 }

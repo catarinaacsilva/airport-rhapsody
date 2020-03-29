@@ -13,14 +13,27 @@ import pt.ua.deti.common.Bag;
  */
 public class PlaneHold {
     /** {@link List} of the bags of the passengers */
-    private final List<Bag> bags;
+    private List<Bag> bags;
+    /** {@link GeneralRepositoryInformation} serves as log */
+    private final GeneralRepositoryInformation gri;
+    private boolean lastPlane = false;
     
     /**
      * Create a Plane Hold location.
-     * @param bags {@link List} of bags
+     * @param gri {@link GeneralRepositoryInformation}
      */
-    public PlaneHold(final List<Bag> bags) {
+    public PlaneHold(final GeneralRepositoryInformation gri) {
+        this.bags = null;
+        this.gri = gri;
+    }
+
+    /**
+     * Unload bags from the {@link Plane} and place them into the {@link PlaneHold}.
+     * @param bags {@link List} of {@link Bag}
+     */
+    public void loadBags(final List<Bag> bags, final boolean lastPlane) {
         this.bags = bags;
+        this.lastPlane = lastPlane;
     }
 
     /**
@@ -30,6 +43,7 @@ public class PlaneHold {
     public Bag getBag() {
         Bag b = bags.get(0);
         bags.remove(0);
+        gri.updatePlaneHold(bags.size());
         return b;
     }
 
@@ -38,6 +52,16 @@ public class PlaneHold {
      * @return true is there are bags to collect; otherwise false
      */
     public boolean hasBags() {
-        return !bags.isEmpty();
+        if (bags == null) {
+            return false;
+        } else if(bags.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean done() {
+        return lastPlane;
     }
 }

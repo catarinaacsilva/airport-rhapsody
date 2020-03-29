@@ -15,17 +15,19 @@ import pt.ua.deti.common.Bag;
  * @version 1.0
  */
 public class TemporaryStorageArea {
+    /** {@link List} of bags from the passengers */
+    private final List<Bag> bags = new ArrayList<>();
+    /** {@link Lock} used by the entities to change the internal state */
+    private final Lock lock = new ReentrantLock();
+    /** {@link GeneralRepositoryInformation} serves as log */
+    private final GeneralRepositoryInformation gri;
 
     /**
-     * Quando as mala são enviadas para o storeroom
+     * Create a Temporary Storage Area.
+     * @param gri {@link GeneralRepositoryInformation}
      */
-    private final List<Bag> bags;
-
-    /** */
-    private final Lock lock = new ReentrantLock();
-
-    public TemporaryStorageArea(){
-        bags = new ArrayList<>();
+    public TemporaryStorageArea(final GeneralRepositoryInformation gri) {
+        this.gri = gri;
     }
 
     /**
@@ -37,6 +39,7 @@ public class TemporaryStorageArea {
         lock.lock();
         try {
             bags.add(b);
+            gri.updateStoreroom(bags.size());
         } finally {
             lock.unlock();
         }

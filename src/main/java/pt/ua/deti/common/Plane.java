@@ -46,15 +46,23 @@ public class Plane {
      * Returns the number of bags.
      * @return the number of bags
      */
-    public synchronized int bn() {
+    public int bn() {
         return bags.size();
     }
 
     /**
-     * Returns the {@link List} of passengers.
-     * @return the {@link List} of passengers
+     * Returns the {@link List} of {@link Passenger}.
+     * @return the {@link List} of {@link Passenger}
      */
     public List<Passenger> getPassengers() {
         return passengers;
+    }
+
+    /**
+     * Returns the {@link List} of {@link Bag}.
+     * @return the {@link List} of {@link Bag}
+     */
+    public List<Bag> getBags() {
+        return bags;
     }
 }
