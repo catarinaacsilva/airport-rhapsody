@@ -297,6 +297,102 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
+     * Update the queue of {@link Passenger} waiting for the bus.
+     * <p>
+     * It adds the {@link Passenger} to the queue.
+     * </p>
+     * 
+     * @param id the identification of the {@link Passenger}
+     */
+    public synchronized void updateQueueAdd(final int id) {
+        for (int i = 0; i < q.length; i++) {
+            if (q[i] <= 0) {
+                q[i] = id;
+                break;
+            }
+        }
+        writeLine();
+    }
+
+    /**
+     * Update the queue of {@link Passenger} waiting for the bus.
+     * <p>
+     * It removes the {@link Passenger} from the queue. It has to deslocate all the
+     * positions of the array.
+     * </p>
+     * 
+     * @param id the identification of the {@link Passenger}
+     */
+    public synchronized void updateQueueRemove(final int id) {
+        // find the position of the passenger
+        int idx = -1;
+        for (int i = 0; i < q.length; i++) {
+            if (q[i] == id) {
+                idx = i;
+                break;
+            }
+        }
+        // move the other elements to remove this one        
+        if (idx > -1) {
+            for (int i = idx; i < q.length - 1; i++) {
+                q[i] = q[i + 1];
+            }
+            q[q.length - 1] = -1;
+        }
+        writeLine();
+    }
+
+    /**
+     * Update the queue of {@link Passenger} inside for the bus.
+     * <p>
+     * It adds the {@link Passenger} to the queue.
+     * </p>
+     * 
+     * @param id the identification of the {@link Passenger}
+     */
+    public synchronized void updateSeatAdd(final int id) {
+        for (int i = 0; i < s.length; i++) {
+            if (s[i] <= 0) {
+                s[i] = id;
+                break;
+            }
+        }
+        writeLine();
+    }
+
+    /**
+     * Update the queue of {@link Passenger} inside for the bus.
+     * <p>
+     * It removes the {@link Passenger} from the queue.
+     * </p>
+     * 
+     * @param id the identification of the {@link Passenger}
+     */
+    public synchronized void updateSeatRemove(final int id) {
+        for (int i = 0; i < s.length; i++) {
+            if (s[i] == id) {
+                s[i] = -1;
+                break;
+            }
+        }
+        writeLine();
+    }
+
+    /**
+     * Update the {@link BusDriver} state.
+     * 
+     * @param pstat the {@link BusDriver} state
+     */
+    public synchronized void updateBusDriver(final int bstat) {
+        this.bstat = bstat;
+        writeLine();
+	}
+
+    public synchronized void debbug(final String msg) {
+        System.err.println(msg);
+    }
+
+    /**
      * Returns the State of the {@link Porter} converted into a {@link String}
      * 
      * @param state State of the {@link Porter}

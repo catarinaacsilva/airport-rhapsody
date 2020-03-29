@@ -16,6 +16,7 @@ public class PlaneHold {
     private List<Bag> bags;
     /** {@link GeneralRepositoryInformation} serves as log */
     private final GeneralRepositoryInformation gri;
+    /** Flag used to identify if this is the last plane */
     private boolean lastPlane = false;
     
     /**
@@ -41,10 +42,14 @@ public class PlaneHold {
      * @return {@link Bag}
      */
     public Bag getBag() {
-        Bag b = bags.get(0);
-        bags.remove(0);
-        gri.updatePlaneHold(bags.size());
-        return b;
+        if(bags.size() > 0) {
+            Bag b = bags.get(0);
+            bags.remove(0);
+            gri.updatePlaneHold(bags.size());
+            return b;
+        } else {
+            return null;
+        }
     }
 
     /**

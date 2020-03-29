@@ -60,19 +60,20 @@ public class Porter implements Runnable {
             switch (state) {
                 case WAITING_FOR_A_PLANE_TO_LAND:
                     takeARest();
+                    tryToCollectABag();
                     break;
                 case AT_THE_PLANES_HOLD:
-                    if (pl.hasBags()) {
-                        tryToCollectABag();
+                    if (temp != null) {
+                        carryItToAppropriateStore();
                     } else {
                         noMoreBagsToCollect();
                     }
                     break;
                 case AT_THE_LUGGAGE_BELT_CONVEYOR:
-                    carryItToAppropriateStore();
+                    tryToCollectABag();
                     break;
                 case AT_THE_STOREROOM:
-                    carryItToAppropriateStore();
+                    tryToCollectABag();
                     break;
                 default:
                     break;
@@ -84,21 +85,19 @@ public class Porter implements Runnable {
      * Take a rest.
      */
     private void takeARest() {
-        al.takeARest();
-        state = State.AT_THE_PLANES_HOLD;
+        state = State.WAITING_FOR_A_PLANE_TO_LAND;
         gri.updatePStat(state.ordinal());
+        al.takeARest();
     }
 
     /**
      * Try to collect a {@link Bag}.
      */
     private void tryToCollectABag() {
+        state = State.AT_THE_PLANES_HOLD;
+        gri.updatePStat(state.ordinal());
         temp = pl.getBag();
-        if (temp.transit()) {
-            state = State.AT_THE_STOREROOM;
-        } else {
-            state = State.AT_THE_LUGGAGE_BELT_CONVEYOR;
-        }
+
         gri.updatePStat(state.ordinal());
     }
 
@@ -106,10 +105,10 @@ public class Porter implements Runnable {
      * No more bags to collect.
      */
     private void noMoreBagsToCollect() {
-        bcp.noMoreBags();
         state = State.WAITING_FOR_A_PLANE_TO_LAND;
         gri.updatePStat(state.ordinal());
-        if(pl.done()) {
+        bcp.noMoreBags();
+        if (pl.done()) {
             done = true;
         }
     }
@@ -118,13 +117,15 @@ public class Porter implements Runnable {
      * Carry it to the Appropriate Store.
      */
     private void carryItToAppropriateStore() {
-        if (state == State.AT_THE_STOREROOM) {
+        if (temp.transit()) {
+            state = State.AT_THE_STOREROOM;
+            gri.updatePStat(state.ordinal());
             tsa.storeBag(temp);
         } else {
+            state = State.AT_THE_LUGGAGE_BELT_CONVEYOR;
+            gri.updatePStat(state.ordinal());
             bcp.storeBag(temp);
         }
         temp = null;
-        state = State.AT_THE_PLANES_HOLD;
-        gri.updatePStat(state.ordinal());
     }
 }

@@ -5,8 +5,11 @@ import java.util.List;
 
 import pt.ua.deti.shared.ArrivalLounge;
 import pt.ua.deti.shared.ArrivalTerminalExit;
+import pt.ua.deti.shared.ArrivalTerminalTransferQuay;
 import pt.ua.deti.shared.BaggageCollectionPoint;
 import pt.ua.deti.shared.BaggageReclaimOffice;
+import pt.ua.deti.shared.DepartureTerminalEntrance;
+import pt.ua.deti.shared.DepartureTerminalTransferQuay;
 import pt.ua.deti.shared.GeneralRepositoryInformation;
 
 /**
@@ -56,6 +59,12 @@ public class Passenger implements Runnable {
     private final BaggageReclaimOffice bro;
     /** {@link ArrivalTerminalExit} */
     private final ArrivalTerminalExit ate;
+    /** {@link DepartureTerminalEntrance} */
+    private final DepartureTerminalEntrance dte;
+    /** {@link ArrivalTerminalTransferQuay} */
+    private final ArrivalTerminalTransferQuay attq;
+    /** {@link DepartureTerminalTransferQuay} */
+    private final DepartureTerminalTransferQuay dttq;
     /** {@link GeneralRepositoryInformation} serves as log */
     private final GeneralRepositoryInformation gri;
     /** Flag used to indicate if the life cycle is done */
@@ -66,9 +75,12 @@ public class Passenger implements Runnable {
      * 
      * @param id     identification
      * @param bagsId {@List} with all the ids from its bags
+     * @param gri {@link GeneralRepositoryInformation} serves as log
      */
     public Passenger(final int id, final List<Integer> bagsId, final boolean transit, final ArrivalLounge al,
-            final BaggageCollectionPoint bcp, final BaggageReclaimOffice bro, final ArrivalTerminalExit ate, final GeneralRepositoryInformation gri) {
+            final BaggageCollectionPoint bcp, final BaggageReclaimOffice bro, final ArrivalTerminalExit ate,
+            final DepartureTerminalEntrance dte, final ArrivalTerminalTransferQuay attq,
+            final DepartureTerminalTransferQuay dttq, final GeneralRepositoryInformation gri) {
         this.bagsId = bagsId;
         this.id = id;
         state = State.AT_THE_DISEMBARKING_ZONE;
@@ -81,6 +93,9 @@ public class Passenger implements Runnable {
         this.bcp = bcp;
         this.bro = bro;
         this.ate = ate;
+        this.dte = dte;
+        this.attq = attq;
+        this.dttq = dttq;
         this.gri = gri;
         nr = bagsId.size();
     }
@@ -90,72 +105,150 @@ public class Passenger implements Runnable {
         while (!done) {
             switch (state) {
                 case AT_THE_DISEMBARKING_ZONE:
-                    whatShouldIDo();
+                    int action = whatShouldIDo();
+                    if (action == 0) {
+                        goHome();
+                    } else if (action == 1) {
+                        goCollectABag();
+                    } else {
+                        takeABus();
+                    }
                     break;
                 case AT_THE_LUGGAGE_COLLECTION_POINT:
-                    goCollectABag();
+                    if (bagsId.size() > 0) {
+                        goCollectABag();
+                    } else if (bagsMissing.size() > 0) {
+                        reportMissingBags();
+                    } else {
+                        goHome();
+                    }
                     break;
                 case AT_THE_BAGGAGE_RECLAIM_OFFICE:
-                    reportMissingBags();
-                    break;
-                case EXITING_THE_ARRIVAL_TERMINAL:
                     goHome();
                     break;
+                case EXITING_THE_ARRIVAL_TERMINAL:
+                    done = true;
+                    break;
+                case AT_THE_ARRIVAL_TRANSFER_TERMINAL:
+                    enterTheBus();
+                    break;
+                case TERMINAL_TRANSFER:
+                    leaveTheBus();
+                    break;
+                case AT_THE_DEPARTURE_TRANSFER_TERMINAL:
+                    prepareNextLeg();
+                    break;
+                case ENTERING_THE_DEPARTURE_TERMINAL:
+                    done = true;
                 default:
                     break;
             }
         }
     }
 
-    private void whatShouldIDo() {
+    /**
+     * What should i do.
+     * 
+     * @return the action that the {@link Passenger} must run
+     */
+    private int whatShouldIDo() {
+        int action = 0;
         gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
         al.whatShouldIDo();
         if (situation == Situation.TRT) {
-            state = State.AT_THE_ARRIVAL_TRANSFER_TERMINAL;
+            // state = State.AT_THE_ARRIVAL_TRANSFER_TERMINAL;
+            action = 2;
         } else {
             if (bagsId.size() > 0) {
-                state = State.AT_THE_LUGGAGE_COLLECTION_POINT;
+                //
+                action = 1;
             } else {
-                state = State.EXITING_THE_ARRIVAL_TERMINAL;
+                // state = State.EXITING_THE_ARRIVAL_TERMINAL;
+                action = 0;
             }
         }
         gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        return action;
     }
 
+    /**
+     * Go collect a bag.
+     */
     private void goCollectABag() {
-        if (bagsId.size() > 0) {
-            int bagId = bagsId.get(0);
-            bagsId.remove(0);
-            boolean collected = bcp.goCollectBag(bagId);
-            if (collected) {
-                bagsColledted.add(bagId);
-            } else {
-                bagsMissing.add(bagId);
-            }
-            state = State.AT_THE_LUGGAGE_COLLECTION_POINT;
-        } else if (bagsMissing.size() > 0) {
-            state = State.AT_THE_BAGGAGE_RECLAIM_OFFICE;
+        state = State.AT_THE_LUGGAGE_COLLECTION_POINT;
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+
+        int bagId = bagsId.get(0);
+        bagsId.remove(0);
+        boolean collected = bcp.goCollectBag(bagId);
+        if (collected) {
+            bagsColledted.add(bagId);
         } else {
-            state = State.EXITING_THE_ARRIVAL_TERMINAL;
+            bagsMissing.add(bagId);
         }
+        state = State.AT_THE_LUGGAGE_COLLECTION_POINT;
         gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
     }
 
+    /**
+     * Report missing bags.
+     */
     private void reportMissingBags() {
+        state = State.AT_THE_BAGGAGE_RECLAIM_OFFICE;
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
         final int missing = bagsMissing.size();
-        for(Integer bagId : bagsMissing) {
+        for (Integer bagId : bagsMissing) {
             bro.reportMissingBag(bagId);
         }
         bagsMissing.clear();
-        state = State.EXITING_THE_ARRIVAL_TERMINAL;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
         gri.updateMissing(missing);
     }
 
-    private void goHome(){
-        ate.goHome();
+    /**
+     * Go home.
+     */
+    private void goHome() {
+        state = State.EXITING_THE_ARRIVAL_TERMINAL;
         gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
-        done = true;
+        ate.goHome(id);
         gri.updateFDT(1);
+    }
+
+    /**
+     * Take a bus.
+     */
+    private void takeABus() {
+        state = State.AT_THE_ARRIVAL_TRANSFER_TERMINAL;
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        attq.takeABus(id);
+    }
+
+    /**
+     * Enter the bus.
+     */
+    private void enterTheBus() {
+        state = State.TERMINAL_TRANSFER;
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        attq.enterTheBus(id);
+    }
+
+    /**
+     * Leave the bus.
+     */
+    private void leaveTheBus() {
+        gri.debbug("Leave the bus");
+        state = State.AT_THE_DEPARTURE_TRANSFER_TERMINAL;
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        dttq.leaveTheBus(id);
+    }
+
+    /**
+     * Preapare next leg.
+     */
+    private void prepareNextLeg() {
+        state = State.ENTERING_THE_DEPARTURE_TERMINAL;
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        dte.prepareNextLeg(id);
+        gri.updateTRT(1);
     }
 }

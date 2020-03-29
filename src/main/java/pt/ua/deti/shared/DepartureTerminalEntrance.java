@@ -1,5 +1,6 @@
 package pt.ua.deti.shared;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,9 +23,11 @@ public class DepartureTerminalEntrance {
     private final int total;
     /** {@link ArrivalTerminalExit} */
     private ArrivalTerminalExit ate;
+    private final GeneralRepositoryInformation gri;
 
-    public DepartureTerminalEntrance(final int total) {
+    public DepartureTerminalEntrance(final int total, final GeneralRepositoryInformation gri) {
         this.total = total;
+        this.gri = gri;
     }
 
     public void setATE(final ArrivalTerminalExit ate) {
@@ -43,7 +46,7 @@ public class DepartureTerminalEntrance {
         }
     }
 
-    public void prepareNextLeg() {
+    public void prepareNextLeg(final int id) {
         lock.lock();
         try {
             blocked++;
@@ -51,24 +54,14 @@ public class DepartureTerminalEntrance {
             while (!done) {
                 int ateBlocked = ate.getBlocked();
                 if ((ateBlocked + blocked) < total) {
-                    cond.await();
+                    cond.await(100, TimeUnit.MILLISECONDS);
                 } else {
                     done = true;
-                    cond.signalAll();
-                    ate.signal();
                 }
+                cond.signalAll();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void signal() {
-        lock.lock();
-        try {
-            cond.signalAll();
         } finally {
             lock.unlock();
         }

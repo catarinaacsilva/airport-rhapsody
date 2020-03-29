@@ -14,9 +14,11 @@ import pt.ua.deti.entities.Passenger;
 import pt.ua.deti.entities.Porter;
 import pt.ua.deti.shared.ArrivalLounge;
 import pt.ua.deti.shared.ArrivalTerminalExit;
+import pt.ua.deti.shared.ArrivalTerminalTransferQuay;
 import pt.ua.deti.shared.BaggageCollectionPoint;
 import pt.ua.deti.shared.BaggageReclaimOffice;
 import pt.ua.deti.shared.DepartureTerminalEntrance;
+import pt.ua.deti.shared.DepartureTerminalTransferQuay;
 import pt.ua.deti.shared.GeneralRepositoryInformation;
 import pt.ua.deti.shared.PlaneHold;
 import pt.ua.deti.shared.TemporaryStorageArea;
@@ -42,6 +44,7 @@ public class AirportConcSol {
         final int N = Integer.parseInt(prop.getProperty("N"));
         final int M = Integer.parseInt(prop.getProperty("M"));
         final int T = Integer.parseInt(prop.getProperty("T"));
+        final long D = Long.parseLong(prop.getProperty("D"));
         final double P = Double.parseDouble(prop.getProperty("P"));
         final String L = prop.getProperty("L");
 
@@ -52,8 +55,10 @@ public class AirportConcSol {
         final BaggageCollectionPoint bcp = new BaggageCollectionPoint(gri);
         final BaggageReclaimOffice bro = new BaggageReclaimOffice();
         final TemporaryStorageArea tsa = new TemporaryStorageArea(gri);
-        final ArrivalTerminalExit ate = new ArrivalTerminalExit(N);
-        final DepartureTerminalEntrance dte = new DepartureTerminalEntrance(N);
+        final ArrivalTerminalExit ate = new ArrivalTerminalExit(N, gri);
+        final DepartureTerminalEntrance dte = new DepartureTerminalEntrance(N, gri);
+        final ArrivalTerminalTransferQuay attq = new ArrivalTerminalTransferQuay(N, T, D, gri);
+        final DepartureTerminalTransferQuay dttq = new DepartureTerminalTransferQuay(gri);
 
         ate.setDTE(dte);
         dte.setATE(ate);
@@ -62,7 +67,7 @@ public class AirportConcSol {
         gri.writeHeader();
 
         // Create the list of planes
-        final List<Plane> planes = createPlanes(K, N, M, P, gri, al, bcp, bro, ate);
+        final List<Plane> planes = createPlanes(K, N, M, P, gri, al, bcp, bro, ate, dte, attq, dttq);
 
         // Start porter
         final Porter porter = new Porter(al, pl, bcp, tsa, gri);
@@ -70,7 +75,7 @@ public class AirportConcSol {
         tporter.start();
 
         // Start bus driver
-        final BusDriver busDriver = new BusDriver(gri);
+        final BusDriver busDriver = new BusDriver(attq, dttq, ate, gri);
         final Thread tbusdriver = new Thread(busDriver);
         tbusdriver.start();
 
@@ -83,7 +88,7 @@ public class AirportConcSol {
             // Reset the necessary shared location to be ready for a new set of passengers
             al.reset();
             bcp.reset();
-            ate.reset();
+            ate.reset((i + 1) == planes.size());
             dte.reset();
             // Load the Plane Hold
             pl.loadBags(plane.getBags(), (i + 1) == planes.size());
@@ -106,11 +111,12 @@ public class AirportConcSol {
             }
         }
 
+        gri.debbug("All passengers done....");
         // Wait for all entities
         try {
-            tbusdriver.join();
             tporter.join();
-
+            gri.debbug("Porter Done...");
+            tbusdriver.join();
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
@@ -130,7 +136,8 @@ public class AirportConcSol {
      */
     private static List<Plane> createPlanes(final int K, final int N, final int M, final double P,
             final GeneralRepositoryInformation gri, final ArrivalLounge al, final BaggageCollectionPoint bcp,
-            final BaggageReclaimOffice bro, final ArrivalTerminalExit ate) {
+            final BaggageReclaimOffice bro, final ArrivalTerminalExit ate, final DepartureTerminalEntrance dte,
+            final ArrivalTerminalTransferQuay attq, final DepartureTerminalTransferQuay dttq) {
         final ArrayList<Plane> planes = new ArrayList<>(K);
         int globalBagId = 0;
 
@@ -140,8 +147,8 @@ public class AirportConcSol {
 
             for (int j = 0; j < N; j++) {
                 List<Integer> bagIds = new ArrayList<>();
-                int numberBags = ThreadLocalRandom.current().nextInt(1, M + 1);
-                boolean transit = false; //getRandomBoolean(.5);
+                int numberBags = ThreadLocalRandom.current().nextInt(0, M + 1);
+                boolean transit = getRandomBoolean(.5);
                 for (int k = 0; k < numberBags; k++) {
 
                     bagIds.add(globalBagId);
@@ -151,7 +158,7 @@ public class AirportConcSol {
                     globalBagId++;
                 }
 
-                Passenger passenger = new Passenger((j + 1), bagIds, transit, al, bcp, bro, ate, gri);
+                Passenger passenger = new Passenger((j + 1), bagIds, transit, al, bcp, bro, ate, dte, attq, dttq, gri);
                 passengers.add(passenger);
             }
 
