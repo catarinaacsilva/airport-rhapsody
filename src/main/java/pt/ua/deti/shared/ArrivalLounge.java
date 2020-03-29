@@ -14,13 +14,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ArrivalLounge {
     /** {@link Lock} used by the entities to change the internal state */
     private final Lock lock = new ReentrantLock();
-    /** {@link Condition} used by the {@link Porter} to wait for all {@link Passenger} */
+    /** {@link Condition} used by the {@link pt.ua.deti.entities.Porter} to wait for all {@link pt.ua.deti.entities.Passenger} */
     private final Condition cond = lock.newCondition();
-    /** The number of {@link Passenger} that have disembarked */
+    /** The number of {@link pt.ua.deti.entities.Passenger} that have disembarked */
     private int disembark;
-    /** The total number of {@link Passenger} */
+    /** The total number of {@link pt.ua.deti.entities.Passenger} */
     private int totalPassengers;
-    /** Flag used to notify the {@link Porter} if it is a new plane */
+    /** Flag used to notify the {@link pt.ua.deti.entities.Porter} if it is a new plane */
     private boolean newPlane;
 
     /**
@@ -48,8 +48,8 @@ public class ArrivalLounge {
     }
 
     /**
-     * The {@link Porter} takes a rest and waits for all the {@link Passenger} to
-     * leave the {@link Plane}.
+     * The {@link pt.ua.deti.entities.Porter} takes a rest and waits for all the {@link pt.ua.deti.entities.Passenger} to
+     * leave the {@link pt.ua.deti.common.Plane}.
      */
     public void takeARest() {
         lock.lock();
@@ -66,7 +66,7 @@ public class ArrivalLounge {
     }
 
     /**
-     * The {@link Passenger} indicates that has left the {@link Plane}.
+     * The {@link pt.ua.deti.entities.Passenger} indicates that has left the {@link pt.ua.deti.common.Plane}.
      */
     public void whatShouldIDo() {
         lock.lock();

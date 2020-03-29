@@ -18,9 +18,10 @@ public class PlaneHold {
     private final GeneralRepositoryInformation gri;
     /** Flag used to identify if this is the last plane */
     private boolean lastPlane = false;
-    
+
     /**
      * Create a Plane Hold location.
+     * 
      * @param gri {@link GeneralRepositoryInformation}
      */
     public PlaneHold(final GeneralRepositoryInformation gri) {
@@ -29,8 +30,11 @@ public class PlaneHold {
     }
 
     /**
-     * Unload bags from the {@link Plane} and place them into the {@link PlaneHold}.
-     * @param bags {@link List} of {@link Bag}
+     * Unload bags from the {@link pt.ua.deti.common.Plane} and place them into the
+     * {@link PlaneHold}.
+     * 
+     * @param bags      {@link List} of {@link pt.ua.deti.common.Bag}
+     * @param lastPlane flag used to identify if this is the last plane
      */
     public void loadBags(final List<Bag> bags, final boolean lastPlane) {
         this.bags = bags;
@@ -38,11 +42,12 @@ public class PlaneHold {
     }
 
     /**
-     * Removes and returns one {@link Bag} from this location
-     * @return {@link Bag}
+     * Removes and returns one {@link pt.ua.deti.common.Bag} from this location
+     * 
+     * @return {@link pt.ua.deti.common.Bag}
      */
     public Bag getBag() {
-        if(bags.size() > 0) {
+        if (bags.size() > 0) {
             Bag b = bags.get(0);
             bags.remove(0);
             gri.updatePlaneHold(bags.size());
@@ -54,19 +59,25 @@ public class PlaneHold {
 
     /**
      * Returns true is there are bags to collect; otherwise false.
+     * 
      * @return true is there are bags to collect; otherwise false
      */
     public boolean hasBags() {
         if (bags == null) {
             return false;
-        } else if(bags.isEmpty()) {
+        } else if (bags.isEmpty()) {
             return false;
         } else {
             return true;
         }
     }
 
-    public boolean done() {
+    /**
+     * Returns true of this is the last plane; otherwise false.
+     * 
+     * @return true of this is the last plane; otherwise false
+     */
+    public boolean lastPlane() {
         return lastPlane;
     }
 }

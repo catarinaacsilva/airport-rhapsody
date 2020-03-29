@@ -20,7 +20,10 @@ import pt.ua.deti.shared.GeneralRepositoryInformation;
  * @version 1.0
  */
 public class Passenger implements Runnable {
-    /** States that descibre the life cycle of a {@link Passenger} */
+    /**
+     * States that descibre the life cycle of a
+     * {@link pt.ua.deti.entities.Passenger}
+     */
     protected static enum State {
         AT_THE_DISEMBARKING_ZONE, AT_THE_LUGGAGE_COLLECTION_POINT, AT_THE_BAGGAGE_RECLAIM_OFFICE,
         EXITING_THE_ARRIVAL_TERMINAL, AT_THE_ARRIVAL_TRANSFER_TERMINAL, TERMINAL_TRANSFER,
@@ -28,8 +31,8 @@ public class Passenger implements Runnable {
     }
 
     /**
-     * Situation of the {@link Passenger}: TRT (in transit); FDT (has this airport
-     * as her final destination)
+     * Situation of the {@link pt.ua.deti.entities.Passenger}: TRT (in transit); FDT
+     * (has this airport as her final destination)
      */
     protected static enum Situation {
         TRT, FDT
@@ -39,15 +42,15 @@ public class Passenger implements Runnable {
      * number of pieces of luggage the passenger carried at the start of her journey
      */
     private final int nr;
-    /** {@link List} of {@link Bag} ids */
+    /** {@link List} of {@link pt.ua.deti.common.Bag} ids */
     private final List<Integer> bagsId;
-    /** {@link List} of {@link Bag} already collected */
-    private final List<Integer> bagsColledted = new ArrayList<>(0);
-    /** {@link List} of {@link Bag} missing */
+    /** {@link List} of {@link pt.ua.deti.common.Bag} already collected */
+    private final List<Integer> bagsCollected = new ArrayList<>(0);
+    /** {@link List} of {@link pt.ua.deti.common.Bag} missing */
     private final List<Integer> bagsMissing = new ArrayList<>(0);
-    /** {@link State} the state of the {@link Passenger} */
+    /** {@link State} the state of the {@link pt.ua.deti.entities.Passenger} */
     private State state;
-    /** {@link Situation} of the {@link Passenger} */
+    /** {@link Situation} of the {@link pt.ua.deti.entities.Passenger} */
     private final Situation situation;
     /** represents the id of this passenger */
     private final int id;
@@ -71,11 +74,20 @@ public class Passenger implements Runnable {
     private boolean done = false;
 
     /**
-     * Create a new {@link Passenger}
+     * Create a new {@link pt.ua.deti.entities.Passenger}
      * 
-     * @param id     identification
-     * @param bagsId {@List} with all the ids from its bags
-     * @param gri {@link GeneralRepositoryInformation} serves as log
+     * @param id      identification
+     * @param bagsId  {@link List} with all the ids from its bags
+     * @param transit flags if the {@link pt.ua.deti.entities.Passenger} is in
+     *                transit
+     * @param al      {@link ArrivalLounge}
+     * @param bcp     {@link BaggageCollectionPoint}
+     * @param bro     {@link BaggageReclaimOffice}
+     * @param ate     {@link ArrivalTerminalExit}
+     * @param dte     {@link DepartureTerminalEntrance}
+     * @param attq    {@link ArrivalTerminalTransferQuay}
+     * @param dttq    {@link DepartureTerminalTransferQuay}
+     * @param gri     {@link GeneralRepositoryInformation} serves as log
      */
     public Passenger(final int id, final List<Integer> bagsId, final boolean transit, final ArrivalLounge al,
             final BaggageCollectionPoint bcp, final BaggageReclaimOffice bro, final ArrivalTerminalExit ate,
@@ -149,11 +161,11 @@ public class Passenger implements Runnable {
     /**
      * What should i do.
      * 
-     * @return the action that the {@link Passenger} must run
+     * @return the action that the {@link pt.ua.deti.entities.Passenger} must run.
      */
     private int whatShouldIDo() {
         int action = 0;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
         al.whatShouldIDo();
         if (situation == Situation.TRT) {
             // state = State.AT_THE_ARRIVAL_TRANSFER_TERMINAL;
@@ -167,7 +179,7 @@ public class Passenger implements Runnable {
                 action = 0;
             }
         }
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
         return action;
     }
 
@@ -176,18 +188,18 @@ public class Passenger implements Runnable {
      */
     private void goCollectABag() {
         state = State.AT_THE_LUGGAGE_COLLECTION_POINT;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
 
         int bagId = bagsId.get(0);
         bagsId.remove(0);
         boolean collected = bcp.goCollectBag(bagId);
         if (collected) {
-            bagsColledted.add(bagId);
+            bagsCollected.add(bagId);
         } else {
             bagsMissing.add(bagId);
         }
         state = State.AT_THE_LUGGAGE_COLLECTION_POINT;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
     }
 
     /**
@@ -195,7 +207,7 @@ public class Passenger implements Runnable {
      */
     private void reportMissingBags() {
         state = State.AT_THE_BAGGAGE_RECLAIM_OFFICE;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
         final int missing = bagsMissing.size();
         for (Integer bagId : bagsMissing) {
             bro.reportMissingBag(bagId);
@@ -209,7 +221,7 @@ public class Passenger implements Runnable {
      */
     private void goHome() {
         state = State.EXITING_THE_ARRIVAL_TERMINAL;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
         ate.goHome(id);
         gri.updateFDT(1);
     }
@@ -219,7 +231,7 @@ public class Passenger implements Runnable {
      */
     private void takeABus() {
         state = State.AT_THE_ARRIVAL_TRANSFER_TERMINAL;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
         attq.takeABus(id);
     }
 
@@ -228,7 +240,7 @@ public class Passenger implements Runnable {
      */
     private void enterTheBus() {
         state = State.TERMINAL_TRANSFER;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
         attq.enterTheBus(id);
     }
 
@@ -236,18 +248,17 @@ public class Passenger implements Runnable {
      * Leave the bus.
      */
     private void leaveTheBus() {
-        gri.debbug("Leave the bus");
         state = State.AT_THE_DEPARTURE_TRANSFER_TERMINAL;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
         dttq.leaveTheBus(id);
     }
 
     /**
-     * Preapare next leg.
+     * Prepare next leg.
      */
     private void prepareNextLeg() {
         state = State.ENTERING_THE_DEPARTURE_TERMINAL;
-        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsColledted.size());
+        gri.updatePassenger(id, state.ordinal(), situation.ordinal(), nr, bagsCollected.size());
         dte.prepareNextLeg(id);
         gri.updateTRT(1);
     }

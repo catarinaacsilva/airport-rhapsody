@@ -5,7 +5,7 @@ import java.util.List;
 import pt.ua.deti.entities.Passenger;
 
 /**
- * Class that represents a plane
+ * Class that represents a plane.
  * 
  * @author Catarina Silva
  * @author Duarte Dias
@@ -14,19 +14,17 @@ import pt.ua.deti.entities.Passenger;
 public class Plane {
     /** {@link List} to the passengers of the plane */
     private final List<Passenger> passengers;
-
     /** {@link List} of the bags of the passengers */
     private final List<Bag> bags;
-    
     /** Represents the flight number */
     private final int fn;
 
     /**
      * Creates a plane object
      * 
-     * @param fn flight number
+     * @param fn         flight number
      * @param passengers {@link List} of passengers
-     * @param bags {@link List} of bags
+     * @param bags       {@link List} of bags
      */
     public Plane(final int fn, final List<Passenger> passengers, final List<Bag> bags) {
         this.fn = fn;
@@ -36,6 +34,7 @@ public class Plane {
 
     /**
      * Returns the flight number
+     * 
      * @return the flight number
      */
     public int fn() {
@@ -44,6 +43,7 @@ public class Plane {
 
     /**
      * Returns the number of bags.
+     * 
      * @return the number of bags
      */
     public int bn() {
@@ -51,16 +51,18 @@ public class Plane {
     }
 
     /**
-     * Returns the {@link List} of {@link Passenger}.
-     * @return the {@link List} of {@link Passenger}
+     * Returns the {@link List} of {@link pt.ua.deti.entities.Passenger}.
+     * 
+     * @return the {@link List} of {@link pt.ua.deti.entities.Passenger}
      */
     public List<Passenger> getPassengers() {
         return passengers;
     }
 
     /**
-     * Returns the {@link List} of {@link Bag}.
-     * @return the {@link List} of {@link Bag}
+     * Returns the {@link List} of {@link pt.ua.deti.common.Bag}.
+     * 
+     * @return the {@link List} of {@link pt.ua.deti.common.Bag}
      */
     public List<Bag> getBags() {
         return bags;

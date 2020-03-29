@@ -1,12 +1,27 @@
 package pt.ua.deti.shared;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Departure Terminal Entrance.
+ * 
+ * <p>
+ * This shared region synchronizes with the {@link ArrivalTerminalExit} (the
+ * other exit point). The strategic adopted was the following:
+ * </p>
+ * <ul>
+ * <li>The {@link #prepareNextLeg(int)} request the blocked
+ * {@link pt.ua.deti.entities.Passenger} on the other region
+ * <li>The blocked counts are implemented with {@link AtomicInteger} in order to
+ * avoid deadlock
+ * <li>Also, there is no signalization between the shared regions
+ * <li>The {@link #prepareNextLeg(int)} awaits on the {@link Condition} for a
+ * certain time and awakes by itself
+ * </ul>
  * 
  * @author Catarina Silva
  * @author Duarte Dias
@@ -17,19 +32,30 @@ public class DepartureTerminalEntrance {
     private final Lock lock = new ReentrantLock();
     /** {@link Condition} used by the passenger to check again for bags */
     private final Condition cond = lock.newCondition();
-    /** blocked {@link Passenger} */
-    private int blocked = 0;
-    /** Total number of {@link Passenger} */
+    /**
+     * {@link AtomicInteger} used to count the blocked
+     * {@link pt.ua.deti.entities.Passenger}
+     */
+    private final AtomicInteger blocked = new AtomicInteger(0);
+    /** Total number of {@link pt.ua.deti.entities.Passenger} */
     private final int total;
     /** {@link ArrivalTerminalExit} */
     private ArrivalTerminalExit ate;
-    private final GeneralRepositoryInformation gri;
 
-    public DepartureTerminalEntrance(final int total, final GeneralRepositoryInformation gri) {
+    /**
+     * Create a {@link DepartureTerminalEntrance}.
+     * 
+     * @param total total number of {@link pt.ua.deti.entities.Passenger}
+     */
+    public DepartureTerminalEntrance(final int total) {
         this.total = total;
-        this.gri = gri;
     }
 
+    /**
+     * Define the other exit point (@{link ArrivalTerminalExit}).
+     * 
+     * @param ate the other exit point (@{link ArrivalTerminalExit})
+     */
     public void setATE(final ArrivalTerminalExit ate) {
         this.ate = ate;
     }
@@ -40,26 +66,25 @@ public class DepartureTerminalEntrance {
     public void reset() {
         lock.lock();
         try {
-            blocked = 0;
+            blocked.set(0);
         } finally {
             lock.unlock();
         }
     }
 
+    /**
+     * Prepare next leg.
+     * 
+     * @param id the identification of the Passenger
+     */
     public void prepareNextLeg(final int id) {
         lock.lock();
         try {
-            blocked++;
-            boolean done = false;
-            while (!done) {
-                int ateBlocked = ate.getBlocked();
-                if ((ateBlocked + blocked) < total) {
-                    cond.await(100, TimeUnit.MILLISECONDS);
-                } else {
-                    done = true;
-                }
-                cond.signalAll();
+            blocked.incrementAndGet();
+            while ((ate.getBlocked() + blocked.get()) < total) {
+                cond.await(300, TimeUnit.MILLISECONDS);
             }
+            cond.signalAll();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -67,14 +92,12 @@ public class DepartureTerminalEntrance {
         }
     }
 
+    /**
+     * Returns the number of blocked {@link pt.ua.deti.entities.Passenger}.
+     * 
+     * @return the number of blocked {@link pt.ua.deti.entities.Passenger}
+     */
     public int getBlocked() {
-        int rv = 0;
-        lock.lock();
-        try {
-            rv = blocked;
-        } finally {
-            lock.unlock();
-        }
-        return rv;
+        return blocked.get();
     }
 }

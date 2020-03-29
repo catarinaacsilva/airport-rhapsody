@@ -40,23 +40,32 @@ public class AirportConcSol {
         } catch (final IOException e) {
             e.printStackTrace();
         }
+        // The number of Planes
         final int K = Integer.parseInt(prop.getProperty("K"));
+        // The number of Passengers per Plane
         final int N = Integer.parseInt(prop.getProperty("N"));
+        // Maximum number of luggage per Passenger
         final int M = Integer.parseInt(prop.getProperty("M"));
+        // Maximum number of seats on the Bus
         final int T = Integer.parseInt(prop.getProperty("T"));
+        // The duration that the Bus driver awaits for passengers (milliseconds)
         final long D = Long.parseLong(prop.getProperty("D"));
+        // The probability of losing a piece of luggage
         final double P = Double.parseDouble(prop.getProperty("P"));
+        // The path to the logging file
         final String L = prop.getProperty("L");
+        // Flag that outputs the logger information on the terminal
+        final boolean V = Boolean.parseBoolean(prop.getProperty("V"));
 
         // Create the Information Sharing Regions
-        final GeneralRepositoryInformation gri = new GeneralRepositoryInformation(L);
+        final GeneralRepositoryInformation gri = new GeneralRepositoryInformation(L, V);
         final ArrivalLounge al = new ArrivalLounge(N);
         final PlaneHold pl = new PlaneHold(gri);
         final BaggageCollectionPoint bcp = new BaggageCollectionPoint(gri);
         final BaggageReclaimOffice bro = new BaggageReclaimOffice();
         final TemporaryStorageArea tsa = new TemporaryStorageArea(gri);
-        final ArrivalTerminalExit ate = new ArrivalTerminalExit(N, gri);
-        final DepartureTerminalEntrance dte = new DepartureTerminalEntrance(N, gri);
+        final ArrivalTerminalExit ate = new ArrivalTerminalExit(N);
+        final DepartureTerminalEntrance dte = new DepartureTerminalEntrance(N);
         final ArrivalTerminalTransferQuay attq = new ArrivalTerminalTransferQuay(N, T, D, gri);
         final DepartureTerminalTransferQuay dttq = new DepartureTerminalTransferQuay(gri);
 
@@ -111,28 +120,35 @@ public class AirportConcSol {
             }
         }
 
-        gri.debbug("All passengers done....");
         // Wait for all entities
         try {
             tporter.join();
-            gri.debbug("Porter Done...");
             tbusdriver.join();
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
 
+        // Write the final report and close the logger file
         gri.writeReport();
         gri.close();
     }
 
     /**
-     * Create a {@link List} of {@link Plane} for the simulation.
+     * Returns a {@link List} of {@link pt.ua.deti.common.Plane}s for the simulation.
      * 
-     * @param K   the number of {@link Plane}
-     * @param N   the number of {@link Passenger} per {@link Plane}
-     * @param M   the maximum number of {@link Bag} per {@link Passenger}
-     * @param P   the probability of losing a bag in the trip
-     * @param gri {@link GeneralRepositoryInformation}
+     * @param K    the number of {@link pt.ua.deti.common.Plane}
+     * @param N    the number of {@link pt.ua.deti.entities.Passenger} per {@link pt.ua.deti.common.Plane}
+     * @param M    the maximum number of {@link pt.ua.deti.common.Bag} per {@link pt.ua.deti.entities.Passenger}
+     * @param P    the probability of losing a bag in the trip
+     * @param gri  {@link GeneralRepositoryInformation}
+     * @param al   {@link ArrivalLounge}
+     * @param bcp  {@link BaggageCollectionPoint}
+     * @param bro  {@link BaggageReclaimOffice}
+     * @param ate  {@link ArrivalTerminalExit}
+     * @param dte  {@link DepartureTerminalEntrance}
+     * @param attq {@link ArrivalTerminalTransferQuay}
+     * @param dttq {@link DepartureTerminalTransferQuay}
+     * @return a {@link List} of {@link pt.ua.deti.common.Plane}s for the simulation
      */
     private static List<Plane> createPlanes(final int K, final int N, final int M, final double P,
             final GeneralRepositoryInformation gri, final ArrivalLounge al, final BaggageCollectionPoint bcp,

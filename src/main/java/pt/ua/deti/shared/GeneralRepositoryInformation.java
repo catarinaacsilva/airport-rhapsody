@@ -60,11 +60,11 @@ public class GeneralRepositoryInformation implements Closeable {
      */
     private int[] nr = new int[6];
     /**
-     * number of pieces of luggage the passenger # (# - 0 .. 5) she has presently
+     * Number of pieces of luggage the passenger # (# - 0 .. 5) she has presently
      * collected
      */
     private int[] na = new int[6];
-    /** {@link BufferedWriter} used to write on a file */
+    /** {@link PrintWriter} used to write on a file */
     private PrintWriter writer;
     /** Number of passengers which have this airport as their final destination */
     private int nFDT;
@@ -74,13 +74,16 @@ public class GeneralRepositoryInformation implements Closeable {
     private int nBags;
     /** Number of bags that were lost */
     private int nMissing;
+    /** Flag used to activate output to the terminal */
+    private final boolean verbose;
 
     /**
      * Creates a {@link GeneralRepositoryInformation}
      * 
      * @param filename the filename to the log file
+     * @param verbose  flag used to activate output to the terminal
      */
-    public GeneralRepositoryInformation(final String filename) {
+    public GeneralRepositoryInformation(final String filename, final boolean verbose) {
         Arrays.fill(st, -1);
         Arrays.fill(si, -1);
         Arrays.fill(nr, -1);
@@ -91,6 +94,8 @@ public class GeneralRepositoryInformation implements Closeable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        this.verbose = verbose;
     }
 
     /**
@@ -106,8 +111,10 @@ public class GeneralRepositoryInformation implements Closeable {
         // Complete the header
         final String str = String.format("%s%n%s%n%s%n%s", str0, str1, str2, str3);
 
-        // Ouput the header
-        System.out.println(str);
+        // Output the header
+        if (verbose) {
+            System.out.println(str);
+        }
         writer.println(str);
     }
 
@@ -162,7 +169,9 @@ public class GeneralRepositoryInformation implements Closeable {
         final String str = String.format("%s%n%s", str0, str1);
 
         // Ouput the lines
-        System.out.println(str);
+        if (verbose) {
+            System.out.println(str);
+        }
         writer.println(str);
     }
 
@@ -180,7 +189,9 @@ public class GeneralRepositoryInformation implements Closeable {
         final String str = String.format("%nFinal report%n%s%n%s%n%s%n%s", str0, str1, str2, str3);
 
         // Ouput the lines
-        System.out.println(str);
+        if (verbose) {
+            System.out.println(str);
+        }
         writer.println(str);
     }
 
@@ -223,7 +234,7 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Update the {@link Plane} state.
+     * Update the {@link pt.ua.deti.common.Plane} state.
      * 
      * @param fn flight number
      * @param bn number of pieces of luggage presently at the plane's hold
@@ -245,9 +256,9 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Update the {@link Porter} state.
+     * Update the {@link pt.ua.deti.entities.Porter} state.
      * 
-     * @param pstat the {@link Porter} state
+     * @param pstat the {@link pt.ua.deti.entities.Porter} state
      */
     public synchronized void updatePStat(final int pstat) {
         this.pstat = pstat;
@@ -277,14 +288,14 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Update the {@link Passenger} information
+     * Update the {@link pt.ua.deti.entities.Passenger} information
      * 
-     * @param id        the identification of the {@link Passenger}
-     * @param state     the new state of the {@link Passenger}
-     * @param situation the situation of the {@link Passenger}
-     * @param bags      number of pieces of luggage the {@link Passenger} carried at
+     * @param id        the identification of the {@link pt.ua.deti.entities.Passenger}
+     * @param state     the new state of the {@link pt.ua.deti.entities.Passenger}
+     * @param situation the situation of the {@link pt.ua.deti.entities.Passenger}
+     * @param bags      number of pieces of luggage the {@link pt.ua.deti.entities.Passenger} carried at
      *                  the start of her journey
-     * @param collected number of pieces of luggage the {@link Passenger} she has
+     * @param collected number of pieces of luggage the {@link pt.ua.deti.entities.Passenger} she has
      *                  presently collected
      */
     public synchronized void updatePassenger(final int id, final int state, final int situation, final int bags,
@@ -297,12 +308,12 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Update the queue of {@link Passenger} waiting for the bus.
+     * Update the queue of {@link pt.ua.deti.entities.Passenger} waiting for the bus.
      * <p>
-     * It adds the {@link Passenger} to the queue.
+     * It adds the {@link pt.ua.deti.entities.Passenger} to the queue.
      * </p>
      * 
-     * @param id the identification of the {@link Passenger}
+     * @param id the identification of the {@link pt.ua.deti.entities.Passenger}
      */
     public synchronized void updateQueueAdd(final int id) {
         for (int i = 0; i < q.length; i++) {
@@ -315,13 +326,13 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Update the queue of {@link Passenger} waiting for the bus.
+     * Update the queue of {@link pt.ua.deti.entities.Passenger} waiting for the bus.
      * <p>
-     * It removes the {@link Passenger} from the queue. It has to deslocate all the
+     * It removes the {@link pt.ua.deti.entities.Passenger} from the queue. It has to deslocate all the
      * positions of the array.
      * </p>
      * 
-     * @param id the identification of the {@link Passenger}
+     * @param id the identification of the {@link pt.ua.deti.entities.Passenger}
      */
     public synchronized void updateQueueRemove(final int id) {
         // find the position of the passenger
@@ -332,7 +343,7 @@ public class GeneralRepositoryInformation implements Closeable {
                 break;
             }
         }
-        // move the other elements to remove this one        
+        // move the other elements to remove this one
         if (idx > -1) {
             for (int i = idx; i < q.length - 1; i++) {
                 q[i] = q[i + 1];
@@ -343,12 +354,12 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Update the queue of {@link Passenger} inside for the bus.
+     * Update the queue of {@link pt.ua.deti.entities.Passenger} inside for the bus.
      * <p>
-     * It adds the {@link Passenger} to the queue.
+     * It adds the {@link pt.ua.deti.entities.Passenger} to the queue.
      * </p>
      * 
-     * @param id the identification of the {@link Passenger}
+     * @param id the identification of the {@link pt.ua.deti.entities.Passenger}
      */
     public synchronized void updateSeatAdd(final int id) {
         for (int i = 0; i < s.length; i++) {
@@ -361,12 +372,12 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Update the queue of {@link Passenger} inside for the bus.
+     * Update the queue of {@link pt.ua.deti.entities.Passenger} inside for the bus.
      * <p>
-     * It removes the {@link Passenger} from the queue.
+     * It removes the {@link pt.ua.deti.entities.Passenger} from the queue.
      * </p>
      * 
-     * @param id the identification of the {@link Passenger}
+     * @param id the identification of the {@link pt.ua.deti.entities.Passenger}
      */
     public synchronized void updateSeatRemove(final int id) {
         for (int i = 0; i < s.length; i++) {
@@ -379,24 +390,24 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Update the {@link BusDriver} state.
+     * Update the {@link pt.ua.deti.entities.BusDriver} state.
      * 
-     * @param pstat the {@link BusDriver} state
+     * @param bstat the {@link pt.ua.deti.entities.BusDriver} state
      */
     public synchronized void updateBusDriver(final int bstat) {
         this.bstat = bstat;
         writeLine();
-	}
+    }
 
     public synchronized void debbug(final String msg) {
         System.err.println(msg);
     }
 
     /**
-     * Returns the State of the {@link Porter} converted into a {@link String}
+     * Returns the State of the {@link pt.ua.deti.entities.Porter} converted into a {@link String}
      * 
-     * @param state State of the {@link Porter}
-     * @return the State of the {@link Porter} converted into a {@link String}
+     * @param state State of the {@link pt.ua.deti.entities.Porter}
+     * @return the State of the {@link pt.ua.deti.entities.Porter} converted into a {@link String}
      */
     private static String pState2str(final int state) {
         switch (state) {
@@ -414,10 +425,10 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Returns the State of the {@link BusDriver} converted into a {@link String}
+     * Returns the State of the {@link pt.ua.deti.entities.BusDriver} converted into a {@link String}
      * 
-     * @param state State of the {@link BusDriver}
-     * @return the State of the {@link BusDriver} converted into a {@link String}
+     * @param state State of the {@link pt.ua.deti.entities.BusDriver}
+     * @return the State of the {@link pt.ua.deti.entities.BusDriver} converted into a {@link String}
      */
     private static String bState2str(final int state) {
         switch (state) {
@@ -435,10 +446,10 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Returns the State of the {@link Passenger} converted into a {@link String}
+     * Returns the State of the {@link pt.ua.deti.entities.Passenger} converted into a {@link String}
      * 
-     * @param state State of the {@link Passenger}
-     * @return the State of the {@link Passenger} converted into a {@link String}
+     * @param state State of the {@link pt.ua.deti.entities.Passenger}
+     * @return the State of the {@link pt.ua.deti.entities.Passenger} converted into a {@link String}
      */
     public static String st2str(final int state) {
         switch (state) {
@@ -464,11 +475,11 @@ public class GeneralRepositoryInformation implements Closeable {
     }
 
     /**
-     * Returns the situation of the {@link Passenger} converted into a
+     * Returns the situation of the {@link pt.ua.deti.entities.Passenger} converted into a
      * {@link String}
      * 
-     * @param situaion situation of the {@link Passenger}
-     * @return the situation of the {@link Passenger} converted into a
+     * @param situaion situation of the {@link pt.ua.deti.entities.Passenger}
+     * @return the situation of the {@link pt.ua.deti.entities.Passenger} converted into a
      *         {@link String}
      */
     private static String situation2str(final int situaion) {

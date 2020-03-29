@@ -7,8 +7,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import pt.ua.deti.entities.Passenger;
-
 /**
  * Arrival Terminal Transfer Quay
  * 
@@ -20,17 +18,20 @@ public class ArrivalTerminalTransferQuay {
     /** {@link Lock} used by the entities to change the internal state */
     private final Lock lock = new ReentrantLock();
     /**
-     * {@link Condition} used by the {@link BusDriver} to wait for all
-     * {@link Passenger}
+     * {@link Condition} used by the {@link pt.ua.deti.entities.BusDriver} to wait
+     * for all {@link pt.ua.deti.entities.Passenger}
      */
     private final Condition cBusDriver = lock.newCondition();
     /** {@link Queue} of {@link Condition} waiting for the bus */
     private final Queue<Condition> queue = new ArrayDeque<>();
-    /** number of seated {@link Passenger} */
+    /** number of seated {@link pt.ua.deti.entities.Passenger} */
     private int seated = 0;
     /** maximum number of seats inside the bus */
     private final int numberSeats;
-    /** Individual synchronization point for each {@link Passenger} */
+    /**
+     * Individual synchronization point for each
+     * {@link pt.ua.deti.entities.Passenger}
+     */
     private final Condition pConds[];
     /** {@link GeneralRepositoryInformation} serves as log */
     private final GeneralRepositoryInformation gri;
@@ -40,8 +41,11 @@ public class ArrivalTerminalTransferQuay {
     /**
      * Create a {@link ArrivalTerminalTransferQuay}.
      * 
-     * @param N           maximum number of {@link Passenger}
+     * @param N           maximum number of {@link pt.ua.deti.entities.Passenger}
      * @param numberSeats maximum number of seats
+     * @param D           duration that the Bus driver awaits for passengers
+     *                    (milliseconds)
+     * @param gri         {@link GeneralRepositoryInformation} serves as log
      */
     public ArrivalTerminalTransferQuay(final int N, final int numberSeats, final long D,
             final GeneralRepositoryInformation gri) {
@@ -57,7 +61,7 @@ public class ArrivalTerminalTransferQuay {
     /**
      * Take a bus.
      * 
-     * @param id the identification from the {@link Passenger}
+     * @param id the identification from the {@link pt.ua.deti.entities.Passenger}
      */
     public void takeABus(final int id) {
         lock.lock();
@@ -79,6 +83,8 @@ public class ArrivalTerminalTransferQuay {
 
     /**
      * Announcing Bus Boarding.
+     * 
+     * @return the number of passengers for this trip
      */
     public int announcingBusBoarding() {
         int rv = 0;
@@ -111,6 +117,8 @@ public class ArrivalTerminalTransferQuay {
 
     /**
      * Enter the Bus.
+     * 
+     * @param id the identification from the {@link pt.ua.deti.entities.Passenger}
      */
     public void enterTheBus(final int id) {
         lock.lock();
@@ -126,6 +134,8 @@ public class ArrivalTerminalTransferQuay {
 
     /**
      * Go to Departure Terminal.
+     * 
+     * @param numberPassengers the current number of passenger for this trip
      */
     public void goToDepartureTerminal(final int numberPassengers) {
         lock.lock();

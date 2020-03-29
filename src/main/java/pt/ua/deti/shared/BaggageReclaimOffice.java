@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 1.0
  */
 public class BaggageReclaimOffice {
-    /** {@link Lock} used by the entities to change the internal {@link list} */
+    /** {@link Lock} used by the entities to change the internal {@link List} */
     private final Lock lock = new ReentrantLock();
     /** {@link List} ids of the missing bags */
     private final List<Integer> bagIds;
@@ -25,7 +25,7 @@ public class BaggageReclaimOffice {
 
     /**
      * Report missing bag.
-     * @param bagId the id of the {@link Bag}
+     * @param bagId the id of the {@link pt.ua.deti.common.Bag}
      */
     public void reportMissingBag(final int bagId){
         lock.lock();

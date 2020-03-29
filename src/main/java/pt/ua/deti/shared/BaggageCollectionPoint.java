@@ -41,7 +41,7 @@ public class BaggageCollectionPoint {
     /**
      * Method used by the porter to store bags in the conveyor belt.
      * 
-     * @param b {@link Bag} carry be the {@link Porter}
+     * @param b {@link pt.ua.deti.common.Bag} carry be the {@link pt.ua.deti.entities.Porter}
      */
     public void storeBag(final Bag b) {
         lock.lock();
@@ -55,9 +55,9 @@ public class BaggageCollectionPoint {
     }
 
     /**
-     * Method used by the {@link Passenger} to collect the bags
+     * Method used by the {@link pt.ua.deti.entities.Passenger} to collect the bags
      * 
-     * @param bagId the id of the {@link Bag}
+     * @param bagId the id of the {@link pt.ua.deti.common.Bag}
      * @return True if the bag was collected, otherwise false
      */
     public boolean goCollectBag(final int bagId) {
@@ -90,7 +90,7 @@ public class BaggageCollectionPoint {
     }
 
     /**
-     * The {@link Porter} notifies that there are no more bags.
+     * The {@link pt.ua.deti.entities.Porter} notifies that there are no more bags.
      */
     public void noMoreBags() {
         lock.lock();

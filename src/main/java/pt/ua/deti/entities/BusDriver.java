@@ -13,12 +13,12 @@ import pt.ua.deti.shared.GeneralRepositoryInformation;
  * @version 1.0
  */
 public class BusDriver implements Runnable {
-    /** States that descibre the life cycle of a {@link BusDriver} */
+    /** States that describe the life cycle of a {@link pt.ua.deti.entities.BusDriver} */
     protected static enum State {
         PARKING_AT_THE_ARRIVAL_TERMINAL, DRIVING_FORWARD, PARKING_AT_THE_DEPARTURE_TERMINAL, DRIVING_BACKWARD
     }
 
-    /** {@link State} the state of the {@link Porter} */
+    /** {@link State} the state of the {@link pt.ua.deti.entities.Porter} */
     private State state;
     /** {@link ArrivalTerminalTransferQuay} */
     private final ArrivalTerminalTransferQuay attq;
@@ -34,7 +34,12 @@ public class BusDriver implements Runnable {
     private int numberPassengers = 0;
 
     /**
-     * @param gri
+     * Create a new {@link pt.ua.deti.entities.BusDriver}.
+     * 
+     * @param attq {@link ArrivalTerminalTransferQuay}
+     * @param dttq {@link DepartureTerminalTransferQuay}
+     * @param ate  {@link ArrivalTerminalExit}
+     * @param gri  {@link GeneralRepositoryInformation} serves as log
      */
     public BusDriver(final ArrivalTerminalTransferQuay attq, final DepartureTerminalTransferQuay dttq,
             final ArrivalTerminalExit ate, final GeneralRepositoryInformation gri) {
@@ -50,12 +55,11 @@ public class BusDriver implements Runnable {
         while (!done) {
             switch (state) {
                 case PARKING_AT_THE_ARRIVAL_TERMINAL:
-                    // check if the day has finnished
+                    // check if the day has finished
                     done = hasDaysWorkEnded();
                     if (!done) {
                         // announce the passengers that bus can go
                         numberPassengers = announcingBusBoarding();
-                        gri.debbug("numberPassengers = "+numberPassengers);
                         if (numberPassengers > 0) {
                             goToDepartureTerminal(numberPassengers);
                         }
@@ -93,7 +97,9 @@ public class BusDriver implements Runnable {
     }
 
     /**
-     * Park The Bus and Let {@link Passenger} off.
+     * Park The Bus and Let {@link pt.ua.deti.entities.Passenger} off.
+     * 
+     * @param numberPassengers the current number of passenger for this trip
      */
     private void parkTheBusAndLetPassOff(final int numberPassengers) {
         state = State.PARKING_AT_THE_DEPARTURE_TERMINAL;
@@ -103,6 +109,8 @@ public class BusDriver implements Runnable {
 
     /**
      * Announcing Bus Boarding.
+     * 
+     * @return the number of passengers for this trip
      */
     private int announcingBusBoarding() {
         // announce the passengers that bus can go
@@ -113,6 +121,8 @@ public class BusDriver implements Runnable {
 
     /**
      * Go to Departure Terminal.
+     * 
+     * @param numberPassengers the current number of passenger for this trip.
      */
     private void goToDepartureTerminal(final int numberPassengers) {
         // await for the passengers to enter the bus
@@ -122,7 +132,9 @@ public class BusDriver implements Runnable {
     }
 
     /**
-     * Has days work endend.
+     * Has days work ended.
+     * 
+     * @return true if the simulation is finished; otherwise false
      */
     private boolean hasDaysWorkEnded() {
         boolean rv = ate.hasDaysWorkEnded();

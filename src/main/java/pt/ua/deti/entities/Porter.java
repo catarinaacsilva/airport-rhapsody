@@ -15,12 +15,12 @@ import pt.ua.deti.shared.TemporaryStorageArea;
  * @version 1.0
  */
 public class Porter implements Runnable {
-    /** States that descibre the life cycle of a {@link Porter} */
+    /** States that describe the life cycle of a {@link pt.ua.deti.entities.Porter} */
     protected static enum State {
         WAITING_FOR_A_PLANE_TO_LAND, AT_THE_PLANES_HOLD, AT_THE_LUGGAGE_BELT_CONVEYOR, AT_THE_STOREROOM
     }
 
-    /** {@link State} the state of the {@link Porter} */
+    /** {@link State} the state of the {@link pt.ua.deti.entities.Porter} */
     private State state;
     /** {@link GeneralRepositoryInformation} serves as log */
     private final GeneralRepositoryInformation gri;
@@ -32,17 +32,19 @@ public class Porter implements Runnable {
     private final BaggageCollectionPoint bcp;
     /** {@link TemporaryStorageArea} */
     private final TemporaryStorageArea tsa;
-    /** Temporary storage to move {@link Bag} */
+    /** Temporary storage to move {@link pt.ua.deti.common.Bag} */
     private Bag temp = null;
     /** Flag used to indicate if the life cycle is done */
     private boolean done = false;
 
     /**
-     * Creates a new {@link Porter}
+     * Creates a new {@link pt.ua.deti.entities.Porter},
      * 
-     * @param gri {@link GeneralRepositoryInformation}
      * @param al  {@link ArrivalLounge}
      * @param pl  {@link PlaneHold}
+     * @param bcp {@link BaggageCollectionPoint}
+     * @param tsa {@link TemporaryStorageArea}
+     * @param gri {@link GeneralRepositoryInformation}
      */
     public Porter(final ArrivalLounge al, final PlaneHold pl, final BaggageCollectionPoint bcp,
             final TemporaryStorageArea tsa, final GeneralRepositoryInformation gri) {
@@ -91,7 +93,7 @@ public class Porter implements Runnable {
     }
 
     /**
-     * Try to collect a {@link Bag}.
+     * Try to collect a {@link pt.ua.deti.common.Bag}.
      */
     private void tryToCollectABag() {
         state = State.AT_THE_PLANES_HOLD;
@@ -102,13 +104,13 @@ public class Porter implements Runnable {
     }
 
     /**
-     * No more bags to collect.
+     * No more {@link pt.ua.deti.common.Bag}s to collect.
      */
     private void noMoreBagsToCollect() {
         state = State.WAITING_FOR_A_PLANE_TO_LAND;
         gri.updatePStat(state.ordinal());
         bcp.noMoreBags();
-        if (pl.done()) {
+        if (pl.lastPlane()) {
             done = true;
         }
     }

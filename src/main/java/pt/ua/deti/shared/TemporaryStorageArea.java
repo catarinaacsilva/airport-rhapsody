@@ -33,7 +33,7 @@ public class TemporaryStorageArea {
     /**
      * Method used by the porter to store bags in the Temporary Storage Area.
      * 
-     * @param b {@link Bag} carry be the {@link Porter}
+     * @param b {@link pt.ua.deti.common.Bag} carry be the {@link pt.ua.deti.entities.Porter}
      */
     public void storeBag(final Bag b) {
         lock.lock();
