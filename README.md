@@ -32,7 +32,7 @@ firefox target/site/apidocs/index.html
 
 ## Interaction Diagram
 
-[Interaction Diagram]()
+[Interaction Diagram](img00.pdf)
 
 ## Authors
 
