@@ -30,6 +30,10 @@ mvn javadoc:javadoc
 firefox target/site/apidocs/index.html
 ```
 
+## Interaction Diagram
+
+[Interaction Diagram]()
+
 ## Authors
 
 * **Catarina Silva** - [catarinaacsilva](https://github.com/catarinaacsilva)
