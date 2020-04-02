@@ -40,9 +40,9 @@ In the end of the day, a full report of the activities is issued.
 
 ## Life cycle of entities
 
-[](lifeCycle/img00)
-[](lifeCycle/img01)
-[](lifeCycle/img02)
+[](lifeCycle/img00.png)
+[](lifeCycle/img01.png)
+[](lifeCycle/img02.png)
 
 ## Requirements
 
