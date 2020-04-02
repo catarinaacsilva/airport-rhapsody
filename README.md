@@ -38,6 +38,12 @@ happens that all seats are occupied prior to the predefined time to leave, the d
 sooner.
 In the end of the day, a full report of the activities is issued.
 
+## Life cycle of entities
+
+[](lifeCycle/img00)
+[](lifeCycle/img01)
+[](lifeCycle/img02)
+
 ## Requirements
 
 - Java 8
