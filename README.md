@@ -5,6 +5,11 @@ Two differents approaches to implement of the airport-rhapsody in Java:
 1. Synchronized
 2. Message passing
 
+## Requirements
+
+- Java 8
+- Maven
+
 # The problem
 
 The described activities take place at an airport, somewhere in Portugal, and aim to portray what
@@ -44,10 +49,6 @@ In the end of the day, a full report of the activities is issued.
 ![](lifeCycle/img01.png)
 ![](lifeCycle/img02.png)
 
-## Requirements
-
-- Java 8
-- Maven
 
 ## Run the simulation
 
